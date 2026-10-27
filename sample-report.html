@@ -1,0 +1,4321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>VYRAX Compliance Dashboard</title>
+    <style>
+      :root {
+        --cream: #f7f2e2;
+        --cream2: #e4ead2;
+        --card: #fcfaf0;
+        --ink: #1d2b22;
+        --mute: #667366;
+        --line: #d9d1b8;
+        --g9: #143626;
+        --g7: #1f5a3d;
+        --g5: #3a8559;
+        --g2: #cfe3cf;
+        --amber: #b8861b;
+        --red: #a63d2f;
+        --side: #dde6c9;
+        --sidetxt: #24402f;
+      }
+      :root[data-pal="mint"] {
+        --cream: #fbf8ee;
+        --cream2: #e1efe4;
+        --card: #fffdf7;
+        --line: #d3e0d2;
+        --g2: #cde6d4;
+        --side: #d8ebdc;
+        --sidetxt: #1f4a33;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow-x: hidden;
+      }
+      body {
+        background: var(--cream);
+        color: var(--ink);
+        font:
+          15px/1.5 "Segoe UI",
+          system-ui,
+          sans-serif;
+        display: flex;
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 600;
+        margin: 0;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--g5);
+        outline-offset: 2px;
+      }
+      aside {
+        width: 236px;
+        background: var(--side);
+        border-right: 1px solid var(--line);
+        color: var(--sidetxt);
+        padding: 22px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 0 8px 18px;
+      }
+      .mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--g7);
+        display: grid;
+        place-items: center;
+        color: var(--cream);
+        font:
+          700 17px Georgia,
+          serif;
+      }
+      .brand b {
+        font:
+          600 18px Georgia,
+          serif;
+        display: block;
+        line-height: 1.1;
+      }
+      .brand small {
+        opacity: 0.65;
+        font-size: 12px;
+      }
+      nav button {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        width: 100%;
+        background: none;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: inherit;
+        cursor: pointer;
+        text-align: left;
+        opacity: 0.82;
+      }
+      nav button:hover {
+        background: rgba(31, 90, 61, 0.09);
+        opacity: 1;
+      }
+      nav button[aria-current="page"] {
+        background: var(--g7);
+        color: var(--cream);
+        opacity: 1;
+        font-weight: 600;
+      }
+      nav svg {
+        width: 18px;
+        height: 18px;
+        flex: none;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .badge {
+        margin-left: auto;
+        background: var(--amber);
+        color: #fff;
+        font-size: 11px;
+        border-radius: 9px;
+        padding: 0 7px;
+      }
+      .who {
+        margin-top: auto;
+        padding: 12px 8px 0;
+        border-top: 1px solid rgba(31, 90, 61, 0.18);
+        font-size: 13px;
+      }
+      .who span {
+        opacity: 0.65;
+        display: block;
+      }
+      main {
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 28px 34px 40px;
+        background: linear-gradient(
+          155deg,
+          var(--cream) 0%,
+          var(--cream) 45%,
+          var(--cream2) 100%
+        );
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+      }
+      .top h1 {
+        font-size: 30px;
+      }
+      .top p {
+        margin: 2px 0 0;
+        color: var(--mute);
+      }
+      .btn {
+        background: var(--g7);
+        color: #fff;
+        border: 0;
+        border-radius: 9px;
+        padding: 9px 16px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: var(--g9);
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--g7);
+        border: 1px solid var(--g5);
+      }
+      .btn.ghost:hover {
+        background: var(--g2);
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .k {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
+      .two {
+        grid-template-columns: 1.6fr 1fr;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .card h3 {
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+      .kpi b {
+        font:
+          600 32px Georgia,
+          serif;
+        color: var(--g7);
+        display: block;
+        line-height: 1.1;
+      }
+      .kpi span {
+        color: var(--mute);
+        font-size: 13px;
+      }
+      .kpi em {
+        font-style: normal;
+        font-size: 12px;
+        color: var(--g5);
+      }
+      .kpi.warn b {
+        color: var(--amber);
+      }
+      .flow {
+        display: flex;
+        height: 14px;
+        border-radius: 7px;
+        overflow: hidden;
+        margin: 6px 0 10px;
+        background: var(--cream2);
+      }
+      .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--mute);
+      }
+      .legend i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        margin-right: 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        text-align: left;
+        font-weight: 600;
+        color: var(--mute);
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+      td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      tr:last-child td {
+        border: 0;
+      }
+      tbody tr.click {
+        cursor: pointer;
+      }
+      tbody tr.click:hover {
+        background: var(--cream2);
+      }
+      .tbl {
+        overflow: visible;
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .s-Approved {
+        background: var(--g2);
+        color: var(--g7);
+      }
+      .s-Under {
+        background: #efe2b8;
+        color: #7a5a0c;
+      }
+      .s-Flagged {
+        background: #f0cfc8;
+        color: var(--red);
+      }
+      .s-Pending {
+        background: var(--cream2);
+        color: var(--mute);
+      }
+      .bar {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--cream2);
+        min-width: 70px;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        border-radius: 4px;
+        background: var(--g5);
+      }
+      .tools {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .tools input,
+      .tools select {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 8px 12px;
+      }
+      .tools input {
+        flex: 1;
+        min-width: 180px;
+      }
+      .item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .item:last-child {
+        border: 0;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 7px;
+        flex: none;
+      }
+      .item small {
+        color: var(--mute);
+        display: block;
+      }
+      .chk {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 14px;
+        align-items: center;
+      }
+      .ok {
+        color: var(--g5);
+        font-weight: 600;
+      }
+      .no {
+        color: var(--red);
+        font-weight: 600;
+      }
+      .wt {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .row:last-child {
+        border: 0;
+      }
+      .row small {
+        color: var(--mute);
+        display: block;
+      }
+      .sw {
+        appearance: none;
+        width: 42px;
+        height: 24px;
+        border-radius: 12px;
+        background: var(--line);
+        position: relative;
+        cursor: pointer;
+        flex: none;
+        transition: background 0.15s;
+      }
+      .sw::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        transition: left 0.15s;
+      }
+      .sw:checked {
+        background: var(--g5);
+      }
+      .sw:checked::after {
+        left: 21px;
+      }
+      .toast {
+        position: fixed;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--g9);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .toast.on {
+        opacity: 1;
+      }
+      .pal {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .palb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--card);
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .palb[aria-pressed="true"] {
+        border-color: var(--g7);
+        font-weight: 600;
+      }
+      .palb i {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+      }
+      .form {
+        display: grid;
+        gap: 14px;
+        max-width: 640px;
+      }
+      .form label {
+        display: grid;
+        gap: 5px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .form input:not([type="checkbox"]),
+      .form select,
+      .form textarea {
+        background: var(--cream);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 9px 12px;
+        font-weight: 400;
+        width: 100%;
+      }
+      .form fieldset {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin: 0;
+      }
+      .form .ck {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-weight: 400;
+        padding: 3px 0;
+      }
+      .err {
+        color: var(--red);
+        min-height: 1.2em;
+        font-size: 14px;
+      }
+      .empty {
+        text-align: center;
+        padding: 26px 10px;
+        color: var(--mute);
+      }
+      .empty p {
+        margin: 0 0 12px;
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      #auth {
+        display: none;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        min-height: 100vh;
+        background: linear-gradient(
+          155deg,
+          var(--cream) 0%,
+          var(--cream) 45%,
+          var(--cream2) 100%
+        );
+      }
+      body.locked #auth {
+        display: flex;
+      }
+      body.locked aside,
+      body.locked main {
+        display: none;
+      }
+      .acard {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
+        width: 100%;
+        max-width: 400px;
+      }
+      .acard h1 {
+        font-size: 26px;
+      }
+      .sub {
+        color: var(--mute);
+        margin: 4px 0 16px;
+      }
+      .acard a {
+        color: var(--g7);
+        font-weight: 600;
+      }
+      .who b {
+        display: block;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+      }
+      .who span {
+        overflow-wrap: anywhere;
+      }
+      .card {
+        box-shadow:
+          0 1px 2px rgba(31, 90, 61, 0.05),
+          0 12px 28px -16px rgba(31, 90, 61, 0.28);
+      }
+      .two > *,
+      .grid > * {
+        min-width: 0;
+      }
+      .card.kpi {
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .card.kpi:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 30px -14px rgba(31, 90, 61, 0.4);
+      }
+      .kic {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--g2);
+        display: grid;
+        place-items: center;
+        margin-bottom: 12px;
+      }
+      .kic svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--g7);
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .kpi.warn .kic {
+        background: #f0e0b4;
+      }
+      .kpi.warn .kic svg {
+        stroke: var(--amber);
+      }
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        background: linear-gradient(120deg, var(--g9), var(--g7));
+        color: #f7f2e2;
+        border-radius: 20px;
+        padding: 28px 32px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        box-shadow: 0 18px 36px -20px rgba(20, 54, 38, 0.7);
+      }
+      .hero h1 {
+        font-size: 30px;
+        color: #f7f2e2;
+      }
+      .hero p {
+        margin: 6px 0 18px;
+        opacity: 0.88;
+        max-width: 440px;
+      }
+      .hero .art {
+        width: 250px;
+        flex: none;
+      }
+      .btn {
+        transition:
+          background 0.15s,
+          transform 0.1s,
+          box-shadow 0.15s;
+        box-shadow: 0 3px 8px -3px rgba(31, 90, 61, 0.55);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn.ghost {
+        box-shadow: none;
+      }
+      .btn.light {
+        background: #f7f2e2;
+        color: var(--g9);
+      }
+      .btn.light:hover {
+        background: #fff;
+      }
+      .mark {
+        background: linear-gradient(135deg, var(--g5), var(--g9));
+        color: #f7f2e2;
+      }
+      nav button {
+        transition:
+          background 0.15s,
+          transform 0.15s;
+      }
+      nav button:hover {
+        transform: translateX(3px);
+      }
+      nav button[aria-current="page"] {
+        box-shadow: 0 6px 14px -6px rgba(20, 54, 38, 0.6);
+      }
+      nav button[aria-current="page"]:hover {
+        transform: none;
+      }
+      .av {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--g7);
+        color: #f7f2e2;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        font-size: 13px;
+        flex: none;
+      }
+      .whor {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .pill::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        margin-right: 6px;
+        vertical-align: 1px;
+      }
+      tbody tr {
+        transition: background 0.15s;
+      }
+      .bar i {
+        animation: fill 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+      @keyframes fill {
+        from {
+          width: 0;
+        }
+      }
+      .bg {
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+      @keyframes grow {
+        from {
+          transform: scaleY(0);
+        }
+      }
+      .seg {
+        animation: draw 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+      @keyframes draw {
+        from {
+          stroke-dasharray: 0 var(--c);
+        }
+      }
+      .dwrap {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+      .donut {
+        width: 160px;
+        flex: none;
+      }
+      .legend.col {
+        flex-direction: column;
+        gap: 9px;
+      }
+      .eg {
+        display: block;
+        margin: 0 auto 8px;
+        width: 112px;
+      }
+      .cmp :is(th, td):is(:nth-child(3), :nth-child(4)) {
+        display: none;
+      }
+      main > * {
+        animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+      main > *:nth-child(2) {
+        animation-delay: 0.07s;
+      }
+      main > *:nth-child(3) {
+        animation-delay: 0.14s;
+      }
+      main > *:nth-child(4) {
+        animation-delay: 0.21s;
+      }
+      main > *:nth-child(n + 5) {
+        animation-delay: 0.28s;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+      }
+      main.quiet * {
+        animation: none !important;
+      }
+      .float {
+        animation: float 6s ease-in-out infinite;
+      }
+      @keyframes float {
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      .toast {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        transform: translate(-50%, 14px);
+        transition:
+          opacity 0.25s,
+          transform 0.25s;
+        box-shadow: 0 12px 28px -10px rgba(20, 54, 38, 0.6);
+      }
+      .toast.on {
+        transform: translate(-50%, 0);
+      }
+      .toast::before {
+        content: "\2713";
+        background: var(--g5);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        flex: none;
+      }
+      .asplit {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        width: 100%;
+        max-width: 880px;
+        border-radius: 22px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        box-shadow: 0 30px 60px -30px rgba(20, 54, 38, 0.5);
+        animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+      .apanel {
+        background: linear-gradient(150deg, var(--g9), var(--g7));
+        color: #f7f2e2;
+        padding: 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+      }
+      .apanel h2 {
+        font-size: 26px;
+        color: #f7f2e2;
+        line-height: 1.2;
+      }
+      .apanel ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      .apanel li {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        opacity: 0.92;
+      }
+      .apanel .art {
+        width: 100%;
+        max-width: 260px;
+      }
+      .asplit .acard {
+        border: 0;
+        border-radius: 0;
+        max-width: none;
+        box-shadow: none;
+      }
+      @media (max-width: 760px) {
+        .asplit {
+          grid-template-columns: 1fr;
+        }
+        .apanel {
+          display: none;
+        }
+        .hero .art {
+          display: none;
+        }
+        .hero {
+          padding: 22px;
+        }
+      }
+
+      .btn,
+      nav button,
+      .palb {
+        position: relative;
+        overflow: hidden;
+      }
+      .rip {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(0);
+        animation: rip 0.65s ease-out forwards;
+        pointer-events: none;
+      }
+      .btn.ghost .rip,
+      nav button .rip,
+      .palb .rip {
+        background: rgba(31, 90, 61, 0.22);
+      }
+      nav button[aria-current="page"] .rip {
+        background: rgba(255, 255, 255, 0.4);
+      }
+      @keyframes rip {
+        to {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+      .btn {
+        background: linear-gradient(135deg, var(--g5), var(--g7));
+        border: 0;
+      }
+      .btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 45%;
+        height: 100%;
+        background: linear-gradient(
+          100deg,
+          transparent,
+          rgba(255, 255, 255, 0.5),
+          transparent
+        );
+        transform: skewX(-20deg);
+        transition: left 0.65s ease;
+        pointer-events: none;
+      }
+      .btn:hover {
+        background: linear-gradient(135deg, var(--g7), var(--g9));
+        transform: translateY(-2px);
+        box-shadow: 0 12px 22px -10px rgba(31, 90, 61, 0.8);
+      }
+      .btn:hover::after {
+        left: 135%;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.96);
+        box-shadow: 0 2px 6px -2px rgba(31, 90, 61, 0.6);
+      }
+      .btn.ghost {
+        background: linear-gradient(var(--g7), var(--g7)) no-repeat 0 100%/100%
+          0;
+        transition:
+          background-size 0.3s ease,
+          color 0.25s,
+          transform 0.15s,
+          box-shadow 0.2s;
+      }
+      .btn.ghost:hover {
+        background: linear-gradient(var(--g7), var(--g7)) no-repeat 0 100%/100%
+          100%;
+        color: #f7f2e2;
+      }
+      .btn.ghost::after {
+        display: none;
+      }
+      .btn.light {
+        background: #f7f2e2;
+      }
+      .btn.light:hover {
+        background: #fff;
+        color: var(--g9);
+      }
+      .btn:disabled,
+      .btn:disabled:hover {
+        transform: none;
+        box-shadow: none;
+        background: var(--g5);
+      }
+      .btn:disabled::after {
+        display: none;
+      }
+      .btn.busy,
+      .btn.busy:disabled {
+        color: transparent;
+        opacity: 1;
+        pointer-events: none;
+      }
+      .btn.busy::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .btn[data-go="new"]::before {
+        content: "+";
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 700;
+        font-size: 17px;
+        line-height: 1;
+        transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .btn[data-go="new"]:hover::before {
+        transform: rotate(90deg) scale(1.2);
+      }
+      nav button svg {
+        transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      nav button:hover svg {
+        transform: scale(1.2) rotate(-8deg);
+      }
+      .palb {
+        transition:
+          transform 0.15s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .palb:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -8px rgba(31, 90, 61, 0.5);
+      }
+      .palb[aria-pressed="true"] {
+        box-shadow: 0 0 0 4px rgba(58, 133, 89, 0.2);
+      }
+      .palb:active {
+        transform: scale(0.96);
+      }
+      .sw {
+        transition:
+          background 0.25s,
+          box-shadow 0.25s;
+      }
+      .sw::after {
+        transition:
+          left 0.3s cubic-bezier(0.3, 1.5, 0.5, 1),
+          width 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .sw:checked {
+        box-shadow: 0 0 0 4px rgba(58, 133, 89, 0.2);
+      }
+      .sw:active::after {
+        width: 22px;
+      }
+      .sw:checked:active::after {
+        left: 17px;
+      }
+      .tools input,
+      .tools select,
+      .form input,
+      .form select,
+      .form textarea {
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .tools input:focus,
+      .tools select:focus,
+      .form input:focus,
+      .form select:focus,
+      .form textarea:focus {
+        outline: none;
+        border-color: var(--g5);
+        box-shadow: 0 0 0 4px rgba(58, 133, 89, 0.18);
+      }
+      .card.kpi {
+        position: relative;
+        overflow: hidden;
+      }
+      .card.kpi::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 3px;
+        width: 0;
+        background: linear-gradient(90deg, var(--g5), var(--g7));
+        transition: width 0.4s;
+      }
+      .card.kpi:hover::after {
+        width: 100%;
+      }
+      .kic {
+        transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .card.kpi:hover .kic {
+        transform: rotate(-8deg) scale(1.1);
+      }
+      tbody tr.click:hover td:first-child {
+        box-shadow: inset 3px 0 var(--g5);
+      }
+      .hero {
+        position: relative;
+      }
+      .hero > * {
+        position: relative;
+        z-index: 1;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          110deg,
+          transparent 30%,
+          rgba(247, 242, 226, 0.12) 50%,
+          transparent 70%
+        );
+        transform: translateX(-100%);
+        animation: sweep 7s ease-in-out 1.2s infinite;
+        z-index: 0;
+      }
+      @keyframes sweep {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      .pulse {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pulse 2.6s ease-out infinite;
+      }
+      @keyframes pulse {
+        from {
+          transform: scale(0.8);
+          opacity: 0.9;
+        }
+        to {
+          transform: scale(1.55);
+          opacity: 0;
+        }
+      }
+      main {
+        background:
+          radial-gradient(
+            620px 320px at 92% 0,
+            rgba(58, 133, 89, 0.12),
+            transparent 70%
+          ),
+          radial-gradient(
+            520px 320px at 0 100%,
+            rgba(31, 90, 61, 0.09),
+            transparent 70%
+          ),
+          linear-gradient(
+            155deg,
+            var(--cream) 0%,
+            var(--cream) 45%,
+            var(--cream2) 100%
+          );
+      }
+      .shake {
+        animation: shake 0.4s;
+      }
+      @keyframes shake {
+        20%,
+        60% {
+          transform: translateX(-7px);
+        }
+        40%,
+        80% {
+          transform: translateX(7px);
+        }
+      }
+
+      #bgfx {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      aside,
+      main,
+      #auth {
+        position: relative;
+        z-index: 1;
+      }
+      main {
+        background: transparent;
+      }
+      #auth {
+        background: transparent;
+      }
+      .toast {
+        z-index: 50;
+      }
+      .card {
+        background: color-mix(in srgb, var(--card) 80%, transparent);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+      }
+      .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+      }
+      .b1 {
+        width: 520px;
+        height: 520px;
+        top: -140px;
+        right: -100px;
+        background: rgba(58, 133, 89, 0.28);
+        animation: d1 22s ease-in-out infinite alternate;
+      }
+      .b2 {
+        width: 460px;
+        height: 460px;
+        bottom: -160px;
+        left: 15%;
+        background: rgba(214, 198, 130, 0.34);
+        animation: d2 26s ease-in-out infinite alternate;
+      }
+      .b3 {
+        width: 380px;
+        height: 380px;
+        top: 38%;
+        left: 42%;
+        background: rgba(160, 205, 170, 0.4);
+        animation: d3 30s ease-in-out infinite alternate;
+      }
+      @keyframes d1 {
+        to {
+          transform: translate(-160px, 180px) scale(1.2);
+        }
+      }
+      @keyframes d2 {
+        to {
+          transform: translate(220px, -120px) scale(1.15);
+        }
+      }
+      @keyframes d3 {
+        to {
+          transform: translate(-200px, -140px) scale(0.85);
+        }
+      }
+      .dots {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(31, 90, 61, 0.18) 1.2px,
+          transparent 1.7px
+        );
+        background-size: 28px 28px;
+        animation: dots 8s linear infinite;
+        -webkit-mask-image: radial-gradient(
+          ellipse at 70% 25%,
+          #000,
+          transparent 75%
+        );
+        mask-image: radial-gradient(ellipse at 70% 25%, #000, transparent 75%);
+      }
+      @keyframes dots {
+        to {
+          background-position: 28px 28px;
+        }
+      }
+      .bi {
+        position: absolute;
+        fill: none;
+        stroke: #1f5a3d;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .campus {
+        right: -10px;
+        bottom: 0;
+        width: min(48vw, 440px);
+        opacity: 0.2;
+      }
+      .cap {
+        top: 7%;
+        right: 7%;
+        width: 120px;
+        opacity: 0.26;
+        animation: capf 8s ease-in-out infinite;
+      }
+      @keyframes capf {
+        50% {
+          transform: translateY(-14px) rotate(6deg);
+        }
+      }
+      .books {
+        bottom: 9%;
+        left: clamp(270px, 26vw, 380px);
+        width: 150px;
+        opacity: 0.22;
+        animation: bob 9s ease-in-out infinite;
+      }
+      .branch {
+        top: 20%;
+        left: clamp(250px, 22vw, 330px);
+        width: 110px;
+        opacity: 0.24;
+        transform-origin: bottom left;
+        animation: sway 7s ease-in-out infinite alternate;
+      }
+      @keyframes sway {
+        from {
+          transform: rotate(-3deg);
+        }
+        to {
+          transform: rotate(4deg);
+        }
+      }
+      .docx {
+        top: 48%;
+        right: 2.5%;
+        width: 90px;
+        opacity: 0.24;
+        animation: bob 11s ease-in-out -3s infinite;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+      .pt {
+        position: absolute;
+        bottom: -20px;
+        border-radius: 50%;
+        background: rgba(58, 133, 89, 0.38);
+        animation: up linear infinite;
+      }
+      .pt:nth-child(3n) {
+        background: transparent;
+        border: 1.5px solid rgba(31, 90, 61, 0.4);
+      }
+      @keyframes up {
+        0% {
+          transform: translate(0, 0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.9;
+        }
+        90% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translate(40px, -112vh);
+          opacity: 0;
+        }
+      }
+      .tag {
+        margin: auto 8px 0;
+        font:
+          italic 15px/1.35 Georgia,
+          serif;
+        opacity: 0.8;
+      }
+      .who {
+        margin-top: 12px;
+      }
+      .drop {
+        display: grid;
+        place-items: center;
+        gap: 6px;
+        text-align: center;
+        border: 2px dashed var(--g5);
+        border-radius: 16px;
+        padding: 34px 16px;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          transform 0.2s;
+      }
+      .drop:hover,
+      .drop.over {
+        background: var(--g2);
+        transform: scale(1.01);
+        border-style: solid;
+      }
+      .drop svg {
+        width: 46px;
+        height: 46px;
+        stroke: var(--g7);
+        fill: none;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        animation: bob 4s ease-in-out infinite;
+      }
+      .drop b {
+        font:
+          600 18px Georgia,
+          serif;
+      }
+      .drop span {
+        color: var(--mute);
+        font-size: 14px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--cream2);
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        padding: 4px 6px 4px 12px;
+        font-size: 13px;
+      }
+      .chip button {
+        border: 0;
+        background: var(--line);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .chip button:hover {
+        background: var(--g5);
+        color: #fff;
+      }
+      .paste {
+        display: grid;
+        gap: 6px;
+        margin-top: 16px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .paste textarea {
+        background: var(--cream);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: inherit;
+        font-weight: 400;
+        font-size: 14px;
+        resize: vertical;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .paste textarea:focus {
+        outline: none;
+        border-color: var(--g5);
+        box-shadow: 0 0 0 4px rgba(58, 133, 89, 0.18);
+      }
+      .cat {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .cat .kic {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        margin: 0;
+      }
+      .cat .kic svg {
+        width: 28px;
+        height: 28px;
+      }
+      .cat h2 {
+        font-size: 26px;
+      }
+      .ev {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+      .ev li {
+        margin: 4px 0;
+      }
+      @media (max-width: 860px) {
+        .books {
+          left: 4%;
+        }
+        .tag {
+          display: none;
+        }
+        .branch {
+          left: 1%;
+        }
+        .docx {
+          display: none;
+        }
+        .cap {
+          width: 84px;
+        }
+      }
+      @media (max-width: 860px) {
+        body {
+          flex-direction: column;
+          height: auto;
+        }
+        aside {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 270px;
+          max-width: 84vw;
+          z-index: 50;
+          transform: translateX(-102%);
+          transition:
+            transform 0.28s ease,
+            box-shadow 0.28s;
+          padding-top: calc(22px + env(safe-area-inset-top, 0px));
+          padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        }
+        body.menu aside {
+          transform: none;
+          box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+        }
+        #mbtn {
+          display: grid !important;
+        }
+        body.menu #scrim {
+          display: block;
+          opacity: 1;
+        }
+        body.locked #mbtn,
+        body.locked #scrim {
+          display: none !important;
+        }
+        .apps :is(th, td):is(:nth-child(3), :nth-child(4), :nth-child(7)),
+        .aud :is(th, td):nth-child(4) {
+          display: none;
+        }
+        main {
+          padding: 68px 16px 40px;
+          overflow: visible;
+        }
+        .two {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pickbtns {
+        display: grid;
+        gap: 12px;
+        margin-top: 6px;
+      }
+      .pickbtns .btn {
+        padding: 13px 16px;
+        font-size: 16px;
+      }
+      .acard.pick {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 40%, #1f5a3d 0%, #143626 70%);
+        color: #f7f2e2;
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease,
+          visibility 0.7s;
+      }
+      #splash.out {
+        opacity: 0;
+        transform: scale(1.06);
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #splash .sp {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      #splash .sp i {
+        position: absolute;
+        bottom: -20px;
+        border-radius: 50%;
+        background: rgba(207, 227, 207, 0.22);
+        animation: spUp linear infinite;
+      }
+      @keyframes spUp {
+        to {
+          transform: translateY(-110vh) scale(1.4);
+          opacity: 0;
+        }
+      }
+      #splash .sc {
+        position: relative;
+        text-align: center;
+        padding: 24px;
+      }
+      #splash .ring {
+        width: 132px;
+        height: 132px;
+        margin: 0 auto 26px;
+        position: relative;
+      }
+      #splash .ring svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      #splash .r1 {
+        fill: none;
+        stroke: rgba(207, 227, 207, 0.25);
+        stroke-width: 3;
+      }
+      #splash .r2 {
+        fill: none;
+        stroke: #cfe3cf;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 90 290;
+        transform-origin: 50% 50%;
+        animation: spSpin 1.6s linear infinite;
+      }
+      #splash .r3 {
+        fill: none;
+        stroke: #b8861b;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 40 340;
+        transform-origin: 50% 50%;
+        animation: spSpin 2.4s linear infinite reverse;
+      }
+      @keyframes spSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #splash .vm {
+        fill: none;
+        stroke: #f7f2e2;
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 120;
+        stroke-dashoffset: 120;
+        animation:
+          spDraw 1.2s 0.2s ease forwards,
+          spPulse 1.8s 1.4s ease-in-out infinite;
+        transform-origin: 50% 50%;
+      }
+      @keyframes spDraw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes spPulse {
+        50% {
+          transform: scale(1.08);
+        }
+      }
+      #splash h1 {
+        font:
+          600 46px Georgia,
+          serif;
+        letter-spacing: 0.34em;
+        margin: 0 0 0 0.34em;
+        display: flex;
+        justify-content: center;
+      }
+      #splash h1 span {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(18px);
+        animation: spLet 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      }
+      @keyframes spLet {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      #splash p {
+        margin: 10px 0 24px;
+        font-size: 14px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0;
+        animation: spLet 0.8s 1.1s forwards;
+        color: #cfe3cf;
+      }
+      #splash .ld {
+        width: 200px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(207, 227, 207, 0.2);
+        margin: 0 auto;
+        overflow: hidden;
+      }
+      #splash .ld i {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #3a8559, #cfe3cf);
+        animation: spLoad 2.4s 0.2s cubic-bezier(0.4, 0.1, 0.2, 1) forwards;
+      }
+      @keyframes spLoad {
+        to {
+          width: 100%;
+        }
+      }
+      @media (max-width: 480px) {
+        #splash h1 {
+          font-size: 34px;
+        }
+      }
+      #mbtn {
+        display: none;
+        position: fixed;
+        top: calc(10px + env(safe-area-inset-top, 0px));
+        left: 12px;
+        z-index: 40;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--g7);
+        cursor: pointer;
+        box-shadow: 0 4px 12px -4px rgba(20, 54, 38, 0.35);
+        padding: 0;
+      }
+      #mbtn svg {
+        width: 22px;
+        height: 22px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+      #scrim {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 45;
+        background: rgba(20, 54, 38, 0.45);
+        opacity: 0;
+        transition: opacity 0.28s;
+      }
+      .d3 {
+        perspective: 700px;
+        margin: 0 0 8px;
+        padding: 0 0 10px;
+        overflow: clip;
+      }
+      .d3t {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        padding: 0 6px 10px;
+      }
+      .d3t span:last-child {
+        font-family: Georgia, serif;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        opacity: 0.85;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .d3s {
+        position: relative;
+        height: 102px;
+        transform-style: preserve-3d;
+      }
+      .d3s::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 112px;
+        height: 12px;
+        margin-left: -56px;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse,
+          rgba(20, 54, 38, 0.3),
+          transparent 70%
+        );
+        filter: blur(2px);
+      }
+      .d3c {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 120px;
+        height: 90px;
+        margin: -45px 0 0 -60px;
+        border: 0;
+        border-radius: 12px;
+        padding: 0;
+        cursor: pointer;
+        color: #f7f2e2;
+        overflow: hidden;
+        text-align: left;
+        transform-style: preserve-3d;
+        box-shadow: 0 12px 22px -12px rgba(20, 54, 38, 0.7);
+        transition:
+          transform 0.55s cubic-bezier(0.2, 0.75, 0.25, 1),
+          opacity 0.4s,
+          box-shadow 0.3s,
+          filter 0.3s;
+      }
+      .d3c::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          transparent 42%,
+          rgba(10, 30, 20, 0.5)
+        );
+        pointer-events: none;
+      }
+      .d3c:not(.on) {
+        filter: brightness(0.92) saturate(0.95);
+      }
+      .d3c:hover {
+        box-shadow: 0 18px 30px -14px rgba(20, 54, 38, 0.85);
+      }
+      .d3c.on {
+        box-shadow:
+          0 20px 34px -16px rgba(20, 54, 38, 0.9),
+          0 0 0 3px rgba(58, 133, 89, 0.32);
+      }
+      .d3art {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .d3ic {
+        position: absolute;
+        left: 9px;
+        top: 9px;
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: rgba(247, 242, 226, 0.18);
+        display: grid;
+        place-items: center;
+        z-index: 1;
+      }
+      .d3ic svg {
+        width: 14px;
+        height: 14px;
+        stroke: #f7f2e2;
+        fill: none;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .d3c b {
+        position: absolute;
+        left: 9px;
+        right: 7px;
+        bottom: 7px;
+        font-size: 11.5px;
+        font-weight: 600;
+        z-index: 1;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .d3d {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        padding-top: 9px;
+      }
+      .d3d i {
+        width: 5px;
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(31, 90, 61, 0.25);
+        transition:
+          width 0.3s,
+          background 0.3s;
+      }
+      .d3d i.on {
+        width: 14px;
+        background: var(--g7);
+      }
+      .d3u {
+        margin: 0 0 6px;
+        padding: 0 0 12px;
+        border-bottom: 1px solid rgba(31, 90, 61, 0.14);
+      }
+      .d3us {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        height: 78px;
+        padding: 0 2px;
+        border-radius: 12px;
+      }
+      .d3us.over .d3add {
+        background: rgba(58, 133, 89, 0.2);
+      }
+      .d3fan {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        perspective: 600px;
+      }
+      .d3tw {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 58px;
+        height: 62px;
+        margin: -31px 0 0 -29px;
+      }
+      .d3th {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 9px;
+        padding: 0;
+        cursor: zoom-in;
+        overflow: hidden;
+        background: var(--cream2);
+        box-shadow: 0 8px 16px -8px rgba(20, 54, 38, 0.65);
+        transition:
+          transform 0.25s,
+          box-shadow 0.25s;
+      }
+      .d3th img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .d3tw:hover {
+        z-index: 30 !important;
+      }
+      .d3tw:hover .d3th {
+        transform: translateY(-5px) scale(1.06);
+        box-shadow: 0 14px 24px -10px rgba(20, 54, 38, 0.8);
+      }
+      .d3x {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        border: 0;
+        background: var(--g9);
+        color: #f7f2e2;
+        font-size: 11px;
+        line-height: 1;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+        padding: 0;
+        transition: opacity 0.2s;
+      }
+      @media (hover: hover) {
+        .d3x {
+          opacity: 0;
+          pointer-events: none;
+        }
+        .d3tw:hover .d3x,
+        .d3tw:focus-within .d3x {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+      .d3tw:focus-within {
+        z-index: 30 !important;
+      }
+      .d3x:hover {
+        background: var(--red);
+      }
+      .d3add {
+        flex: none;
+        width: 56px;
+        border: 2px dashed var(--g5);
+        border-radius: 11px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        color: var(--g7);
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1.15;
+        padding: 6px 2px;
+        transition:
+          background 0.2s,
+          transform 0.2s;
+      }
+      .d3add:hover {
+        background: rgba(58, 133, 89, 0.12);
+        transform: scale(1.03);
+      }
+      .d3add svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--g7);
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+      .d3add small {
+        font-weight: 400;
+        font-size: 9.5px;
+        opacity: 0.7;
+        line-height: 1.1;
+      }
+      .d3us.e .d3fan {
+        display: none;
+      }
+      .d3us.e .d3add {
+        flex: 1;
+        font-size: 12px;
+        gap: 4px;
+      }
+      .d3us.e .d3add svg {
+        width: 22px;
+        height: 22px;
+      }
+      #lb {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: rgba(15, 40, 28, 0.74);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.25s,
+          visibility 0.25s;
+        padding: 56px 24px;
+      }
+      #lb.on {
+        opacity: 1;
+        visibility: visible;
+      }
+      .lbf {
+        perspective: 900px;
+        transition: transform 0.2s ease-out;
+        transform-style: preserve-3d;
+        max-width: min(760px, 86vw);
+      }
+      #lb img {
+        display: block;
+        max-width: min(760px, 86vw);
+        max-height: 74vh;
+        border-radius: 14px;
+        box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.85);
+        background: var(--card);
+      }
+      .lbt {
+        color: #f7f2e2;
+        font-size: 13px;
+        opacity: 0.85;
+        text-align: center;
+        max-width: 80vw;
+        overflow-wrap: anywhere;
+      }
+      #lbc {
+        position: absolute;
+        top: calc(14px + env(safe-area-inset-top, 0px));
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 0;
+        background: rgba(247, 242, 226, 0.15);
+        color: #f7f2e2;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+      }
+      #lbc:hover {
+        background: rgba(247, 242, 226, 0.3);
+      }
+      .api {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 10px 2px 0;
+        padding: 8px 10px;
+        border: 1px solid rgba(31, 90, 61, 0.2);
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--sidetxt);
+      }
+      .api i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--red);
+        flex: none;
+        transition:
+          background 0.3s,
+          box-shadow 0.3s;
+      }
+      .api.on i {
+        background: var(--g5);
+        box-shadow: 0 0 0 3px rgba(58, 133, 89, 0.2);
+      }
+      .api span {
+        opacity: 0.85;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="splash" role="status" aria-label="Loading VYRAX">
+      <div class="sp" id="spb" aria-hidden="true"></div>
+      <div class="sc">
+        <div class="ring">
+          <svg viewBox="0 0 132 132" aria-hidden="true">
+            <circle class="r1" cx="66" cy="66" r="60" />
+            <circle class="r2" cx="66" cy="66" r="60" />
+            <circle class="r3" cx="66" cy="66" r="50" />
+            <path class="vm" d="M44 48 L66 86 L88 48" />
+          </svg>
+        </div>
+        <h1 aria-hidden="true">
+          <span style="animation-delay: 0.3s">V</span
+          ><span style="animation-delay: 0.42s">Y</span
+          ><span style="animation-delay: 0.54s">R</span
+          ><span style="animation-delay: 0.66s">A</span
+          ><span style="animation-delay: 0.78s">X</span>
+        </h1>
+        <p>Compliance made clear</p>
+        <div class="ld"><i></i></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var s = document.getElementById("splash"),
+          b = document.getElementById("spb");
+        for (var i = 0; i < 18; i++) {
+          var e = document.createElement("i"),
+            z = 4 + Math.random() * 10;
+          e.style.cssText =
+            "left:" +
+            Math.random() * 100 +
+            "%;width:" +
+            z +
+            "px;height:" +
+            z +
+            "px;animation-duration:" +
+            (5 + Math.random() * 6) +
+            "s;animation-delay:" +
+            -Math.random() * 8 +
+            "s";
+          b.appendChild(e);
+        }
+        var done = function () {
+          s.classList.add("out");
+          setTimeout(function () {
+            s.remove();
+          }, 800);
+        };
+        var go = function () {
+          setTimeout(done, 2800);
+        };
+        if (document.readyState === "complete") go();
+        else addEventListener("load", go);
+      })();
+    </script>
+    <div id="bgfx" aria-hidden="true">
+      <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+      <div class="dots"></div>
+      <svg class="bi campus" viewBox="0 0 360 220">
+        <path d="M40 84L180 28 320 84z" fill="rgba(31,90,61,.08)" />
+        <path
+          d="M20 200h320M34 188h292M48 176h264M48 92h264M40 84h280M60 176V92M108 176V92M156 176V92M204 176V92M252 176V92M300 176V92M180 28V6M180 6l20 7-20 7"
+        />
+        <circle cx="180" cy="62" r="10" />
+        <path d="M150 176v-34a30 30 0 0160 0v34" opacity=".6" />
+      </svg>
+      <svg class="bi cap" viewBox="0 0 120 90">
+        <path d="M60 8L112 32 60 56 8 32z" fill="rgba(31,90,61,.12)" />
+        <path d="M28 44v22c0 9 64 9 64 0V44M104 36v26" />
+        <circle cx="104" cy="66" r="4" fill="#1f5a3d" />
+      </svg>
+      <svg class="bi books" viewBox="0 0 130 90">
+        <rect x="10" y="60" width="112" height="22" rx="3" />
+        <path d="M26 60v22M96 60v22" />
+        <rect x="22" y="36" width="96" height="22" rx="3" />
+        <path d="M38 36v22M104 36v22" />
+        <rect x="8" y="12" width="100" height="22" rx="3" />
+        <path d="M24 12v22M90 12v22" />
+      </svg>
+      <svg class="bi branch" viewBox="0 0 120 170">
+        <path d="M20 165C30 120 50 80 95 12" />
+        <path
+          d="M33 128c-20-2-28-16-26-30 20 2 30 12 26 30zM42 106c18-8 36-4 44 8-18 8-36 4-44-8zM58 80c-18-6-24-22-18-34 16 6 24 18 18 34zM70 58c16-8 32-4 38 8-16 8-32 4-38-8zM86 30c-12-8-14-22-6-30 12 8 14 20 6 30z"
+          fill="rgba(31,90,61,.1)"
+        />
+      </svg>
+      <svg class="bi docx" viewBox="0 0 90 110">
+        <rect
+          x="8"
+          y="6"
+          width="64"
+          height="86"
+          rx="8"
+          fill="rgba(31,90,61,.06)"
+        />
+        <path d="M22 28h36M22 42h36M22 56h22" />
+        <circle cx="62" cy="82" r="18" fill="rgba(31,90,61,.12)" />
+        <path d="M53 82l6 6 11-13" />
+      </svg>
+    </div>
+    <aside>
+      <div class="brand">
+        <div class="mark">V</div>
+        <div><b>VYRAX</b><small>Compliance desk</small></div>
+      </div>
+      <div class="d3" id="d3m" aria-label="3D menu"></div>
+      <div class="d3u" id="d3u" aria-label="Uploaded 3D images"></div>
+      <nav id="nav" aria-label="Main"></nav>
+      <div class="api" id="apiInd"><i></i><span>Backend: checking…</span></div>
+      <p class="tag">Every flag backed by evidence.</p>
+      <div class="who">
+        <div class="whor">
+          <div class="av" id="wa"></div>
+          <div style="min-width: 0"><b id="wn"></b><span id="we"></span></div>
+        </div>
+        <button
+          class="btn ghost"
+          data-out
+          style="margin-top: 10px; width: 100%"
+        >
+          Sign out
+        </button>
+      </div>
+    </aside>
+    <button
+      id="mbtn"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+    >
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+    </button>
+    <div id="scrim"></div>
+    <main id="main"></main>
+    <div id="auth"></div>
+    <div class="toast" id="toast" role="status"></div>
+    <script>
+      const ICONS = {
+        dashboard:
+          '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+        applications:
+          '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',
+        verification:
+          '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/>',
+        alerts:
+          '<path d="M6 17V11a6 6 0 1112 0v6l2 2H4z"/><path d="M10 21h4"/>',
+        reports:
+          '<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+        audit: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+        settings:
+          '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+        flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+        check:
+          '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
+        docplus:
+          '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M12 11v6M9 14h6"/>',
+        identify: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',
+        compliance:
+          '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12.5l2 2 4-4.5M9 18h6"/>',
+      };
+      const VIEWS = [
+        ["dashboard", "Dashboard"],
+        ["applications", "Applications"],
+        ["identify", "Identify Category"],
+        ["verification", "Verification"],
+        ["compliance", "Compliance"],
+        ["alerts", "Alerts"],
+        ["reports", "Reports"],
+        ["audit", "Audit Trail"],
+        ["settings", "Settings"],
+      ];
+      const TYPES = [
+        "New institution",
+        "New course",
+        "Intake increase",
+        "Extension of approval",
+        "Closure of course",
+      ];
+      const STATES = [
+        "Andhra Pradesh",
+        "Karnataka",
+        "Kerala",
+        "Tamil Nadu",
+        "Telangana",
+        "Other state or union territory",
+      ];
+      const DOCL = [
+        "Land ownership deed",
+        "Building plan approval",
+        "Fire safety certificate",
+        "Faculty qualification list",
+        "Audited financial statement",
+      ];
+      const A = () => store.apps || (store.apps = []),
+        AC = () =>
+          A().filter((a) => a.status == "Flagged" || a.status == "Pending docs")
+            .length;
+      const LOG = (who, t, area) => {
+        (store.audit || (store.audit = [])).unshift([
+          new Date().toLocaleString("en-IN", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          user ? user.name : who,
+          t,
+          area,
+        ]);
+        save();
+      };
+      const esc = (x) =>
+        String(x).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const empty = (t, b) =>
+        `<div class="empty"><svg class="eg" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="80" rx="34" ry="6" fill="var(--cream2)"/><rect x="34" y="14" width="46" height="58" rx="6" fill="var(--g2)" transform="rotate(-6 57 43)"/><rect x="42" y="10" width="46" height="60" rx="6" fill="var(--card)" stroke="var(--g5)" stroke-width="2"/><path d="M50 26h30M50 36h30M50 46h18" stroke="var(--g5)" stroke-width="3" stroke-linecap="round"/><circle cx="86" cy="62" r="13" fill="var(--g7)"/><path d="M80 62l4 4 7-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><p>${t}</p>${b || ""}</div>`;
+      function dl() {
+        const rows = [
+          [
+            "ID",
+            "Institution",
+            "State",
+            "Type",
+            "Status",
+            "Documents",
+            "Contact",
+            "Filed",
+          ],
+        ].concat(
+          A().map((a) => [
+            a.id,
+            a.name,
+            a.state,
+            a.type,
+            a.status,
+            a.docs.length + " of 5",
+            a.email,
+            a.date,
+          ]),
+        );
+        const l = document.createElement("a");
+        l.href = URL.createObjectURL(
+          new Blob(
+            [
+              rows
+                .map((r) =>
+                  r
+                    .map((c) => '"' + String(c).replace(/"/g, '""') + '"')
+                    .join(","),
+                )
+                .join("\n"),
+            ],
+            { type: "text/csv" },
+          ),
+        );
+        l.download = "applications.csv";
+        l.click();
+        toast("Exported applications.csv");
+      }
+      const COL = {
+        Approved: "var(--g5)",
+        "Under review": "var(--amber)",
+        Flagged: "var(--red)",
+        "Pending docs": "#c9bf98",
+      };
+      const $ = (s) => document.querySelector(s),
+        pill = (s) => `<span class="pill s-${s.split(" ")[0]}">${s}</span>`;
+      let state = { q: "", f: "All" },
+        store = {};
+      try {
+        store = JSON.parse(localStorage.getItem("aicte") || "{}");
+      } catch (e) {}
+      function save() {
+        try {
+          localStorage.setItem("aicte", JSON.stringify(store));
+        } catch (e) {}
+      }
+      function toast(t) {
+        const e = $("#toast");
+        e.textContent = t;
+        e.classList.add("on");
+        clearTimeout(toast.t);
+        toast.t = setTimeout(() => e.classList.remove("on"), 2200);
+      }
+      function head(t, p, btn) {
+        return `<div class="top"><div><h1>${t}</h1><p>${p}</p></div>${btn || ""}</div>`;
+      }
+      function table(rows, cp) {
+        return rows.length
+          ? `<div class="tbl"><table class="apps${cp ? " cmp" : ""}"><thead><tr><th>ID</th><th>Institution</th><th>State</th><th>Type</th><th>Status</th><th>Documents</th><th>Filed</th></tr></thead><tbody>${rows.map((a) => `<tr class="click" data-id="${a.id}"><td>${a.id}</td><td>${esc(a.name)}</td><td>${a.state}</td><td>${a.type}</td><td>${pill(a.status)}</td><td><div class="bar"><i style="width:${a.docs.length * 20}%"></i></div>${a.docs.length} of 5</td><td>${a.date}</td></tr>`).join("")}</tbody></table></div>`
+          : empty(
+              "No applications yet.",
+              `<button class="btn" data-go="new">Submit an application</button>`,
+            );
+      }
+      function chart() {
+        const n = [...Array(7)].map((_, i) => {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() - 6 + i);
+            return [
+              d.toLocaleDateString("en-IN", { weekday: "short" }),
+              A().filter((a) => {
+                const t = new Date(a.ts);
+                t.setHours(0, 0, 0, 0);
+                return +t == +d;
+              }).length,
+            ];
+          }),
+          m = Math.max(3, ...n.map((x) => x[1])),
+          k = 130 / m;
+        return `<svg viewBox="0 0 420 190" width="100%" role="img" aria-label="Applications submitted in the last 7 days"><defs><linearGradient id="bgr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a8559"/><stop offset="1" stop-color="#1f5a3d"/></linearGradient></defs>${[0, 1].map((v) => `<line x1="30" x2="410" y1="${160 - v * 130}" y2="${160 - v * 130}" stroke="var(--line)"/><text x="24" y="${164 - v * 130}" font-size="10" fill="var(--mute)" text-anchor="end">${v * m}</text>`).join("")}${n.map((x, i) => `<rect x="${44 + i * 54}" y="${160 - x[1] * k}" width="34" height="${x[1] * k}" rx="5" fill="url(#bgr)" class="bg" style="animation-delay:${i * 60}ms"/><text x="${61 + i * 54}" y="178" font-size="11" fill="var(--mute)" text-anchor="middle">${x[0]}</text>${x[1] ? `<text x="${61 + i * 54}" y="${154 - x[1] * k}" font-size="11" fill="var(--ink)" text-anchor="middle">${x[1]}</text>` : ""}`).join("")}</svg>`;
+      }
+      const R = {
+        dashboard() {
+          const a = A(),
+            c = (s) => a.filter((x) => x.status == s).length,
+            t = a.length,
+            att = a.filter(
+              (x) => x.status == "Flagged" || x.status == "Pending docs",
+            );
+          return (
+            `<section class="hero"><div><h1>Welcome back, ${esc(user.name.split(" ")[0])}</h1><p>${new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}. ${t ? "Here is where your applications stand." : "Submit your first application to get started."}</p><button class="btn light" data-go="new">New application</button></div>${ART}</section>` +
+            `<div class="grid k">${[
+              [t, "Submitted", "applications"],
+              [c("Under review"), "Under review", "audit"],
+              [c("Pending docs"), "Waiting for documents", "docplus"],
+              [c("Flagged"), "Flagged", "flag"],
+              [c("Approved"), "Approved", "check"],
+            ]
+              .map(
+                (x) =>
+                  `<div class="card kpi${x[1] == "Flagged" && x[0] ? " warn" : ""}"><div class="kic"><svg viewBox="0 0 24 24">${ICONS[x[2]]}</svg></div><b data-n="${x[0]}">${x[0]}</b><span>${x[1]}</span></div>`,
+              )
+              .join("")}</div>` +
+            `<div class="grid two" style="margin-top:16px"><div class="card"><h3>Submitted in the last 7 days</h3>${chart()}</div><div class="card"><h3>Where applications stand</h3>${
+              t
+                ? `<div class="dwrap">${donut(a)}<div class="legend col">${Object.keys(
+                    COL,
+                  )
+                    .map(
+                      (k) =>
+                        `<span><i style="background:${COL[k]}"></i>${k} (${c(k)})</span>`,
+                    )
+                    .join("")}</div></div>`
+                : empty(
+                    "The status breakdown appears after your first submission.",
+                  )
+            }</div></div>` +
+            `<div class="grid two" style="margin-top:16px"><div class="card"><h3>Latest applications</h3>${table(a.slice(0, 5), 1)}</div><div class="card"><h3>Needs attention</h3>${
+              att.length
+                ? att
+                    .slice(0, 4)
+                    .map(
+                      (x) =>
+                        `<div class="item"><span class="dot" style="background:var(--${x.status == "Flagged" ? "red" : "amber"})"></span><div>${esc(x.name)}<small>${x.status == "Flagged" ? "Flagged for review" : "Missing documents"}</small></div></div>`,
+                    )
+                    .join("") +
+                  `<button class="btn ghost" data-go="alerts" style="margin-top:10px">See all alerts</button>`
+                : empty("Nothing needs attention right now.")
+            }</div></div>`
+          );
+        },
+        applications() {
+          const a = A(),
+            rows = a.filter(
+              (x) =>
+                (state.f == "All" || x.status == state.f) &&
+                (x.id + x.name + x.state + x.type)
+                  .toLowerCase()
+                  .includes(state.q.toLowerCase()),
+            );
+          return (
+            head(
+              "Applications",
+              "Search, filter and open any application.",
+              `<button class="btn" data-go="new">New application</button>`,
+            ) +
+            (a.length
+              ? `<div class="tools"><input id="q" type="search" placeholder="Search by ID, institution, state or type" value="${esc(state.q)}" aria-label="Search applications"><select id="f" aria-label="Filter by status">${["All", "Approved", "Under review", "Flagged", "Pending docs"].map((o) => `<option${o == state.f ? " selected" : ""}>${o}</option>`).join("")}</select><button class="btn ghost" data-csv>Export CSV</button></div><div class="card">${rows.length ? table(rows) : empty("No applications match. Clear the search or choose another status.")}</div>`
+              : `<div class="card">${table([])}</div>`)
+          );
+        },
+        new() {
+          const pf = state.pf || {};
+          return (
+            head(
+              "New application",
+              pf.type
+                ? "Prefilled from your uploaded documents. Check the details and add the institution name."
+                : "Enter the institution and the documents you are submitting.",
+            ) +
+            `<form id="frm" class="card form" novalidate>
+ <label>Institution name<input name="name" maxlength="120" placeholder="Full name of the institution" autocomplete="off"></label>
+ <label>State or union territory<select name="state">${STATES.map((x) => `<option>${x}</option>`).join("")}</select></label>
+ <label>Application type<select name="type">${TYPES.map((x) => `<option${x == pf.type ? " selected" : ""}>${x}</option>`).join("")}</select></label>
+ <label>Contact email<input name="email" type="email" placeholder="name@institution.edu"></label>
+ <label>Proposed yearly intake (seats)<input name="intake" type="number" min="0" placeholder="60"></label>
+ <label>Number of faculty<input name="fac" type="number" min="0"></label>
+ <label>Built-up area (sq m)<input name="built" type="number" min="0"></label>
+ <label>Fire certificate valid until<input name="fireTo" type="date"></label>
+ <fieldset><legend>Documents you are attaching</legend>${DOCL.map((d) => `<label class="ck"><input type="checkbox" name="doc" value="${d}"${(pf.docs || []).includes(d) ? " checked" : ""}>${d}</label>`).join("")}</fieldset>
+ <label>Attach files (optional)<input name="files" type="file" multiple></label>
+ <label>Remarks (optional)<textarea name="remarks" rows="3" maxlength="500"></textarea></label>
+ <div class="err" id="err" role="alert"></div>
+ <div><button class="btn" type="submit">Submit application</button> <button class="btn ghost" type="button" data-go="applications">Cancel</button></div></form>`
+          );
+        },
+        verification() {
+          const q = A().filter((a) => a.status != "Approved");
+          return (
+            head(
+              "Verification",
+              "Check each application’s documents, then approve it, flag it or ask for more documents.",
+            ) +
+            (q.length
+              ? `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">${q.map((a) => `<div class="card"><h3>${esc(a.name)}</h3><small style="color:var(--mute)">${a.id}, ${a.type}</small><br>${pill(a.status)}<div class="chk" style="margin:12px 0">${DOCL.map((d) => `<span>${d}</span><span class="${a.docs.includes(d) ? "ok" : "no"}">${a.docs.includes(d) ? "Provided" : "Missing"}</span>`).join("")}</div><button class="btn" data-st="${a.id}|Approved"${a.docs.length < 5 ? ' disabled title="All five documents are needed to approve"' : ""}>Approve</button> <button class="btn ghost" data-st="${a.id}|Flagged">Flag</button>${a.status != "Pending docs" ? ` <button class="btn ghost" data-st="${a.id}|Pending docs">Request documents</button>` : ""}${a.api ? ` <button class="btn ghost" data-rc="${a.id}">Re-check</button> <button class="btn ghost" data-rep="${a.id}">Report</button>` : ""}</div>`).join("")}</div>`
+              : `<div class="card">${empty("Nothing to verify. Applications that need a check will appear here.")}</div>`)
+          );
+        },
+        alerts() {
+          const L = A().filter(
+            (a) => a.status == "Flagged" || a.status == "Pending docs",
+          );
+          return (
+            head("Alerts", "Applications that need your attention.") +
+            `<div class="card">${L.length ? L.map((a) => `<div class="item"><span class="dot" style="background:var(--${a.status == "Flagged" ? "red" : "amber"})"></span><div style="flex:1">${a.status == "Flagged" ? "Flagged for review" : "Missing documents"}: ${esc(a.name)}<small>${a.id}, ${5 - a.docs.length} of 5 documents missing</small></div><small>${a.date}</small></div>`).join("") : empty("No alerts. Flagged applications and missing documents will show up here.")}</div>`
+          );
+        },
+        reports() {
+          const a = A();
+          return (
+            head(
+              "Reports",
+              "Summaries based on the applications you have submitted.",
+              a.length
+                ? `<button class="btn" data-csv>Download CSV</button>`
+                : "",
+            ) +
+            `<div class="card"><h3>Approvals by state</h3>${
+              a.length
+                ? STATES.map((st) => {
+                    const x = a.filter((y) => y.state == st),
+                      ok = x.filter((y) => y.status == "Approved").length;
+                    return x.length
+                      ? `<div class="row"><span style="width:150px">${st}</span><div class="bar" style="flex:1"><i style="width:${(ok / x.length) * 100}%"></i></div><b>${ok} of ${x.length}</b></div>`
+                      : "";
+                  }).join("")
+                : empty(
+                    "No data to report yet.",
+                    `<button class="btn" data-go="new">Submit an application</button>`,
+                  )
+            }</div>`
+          );
+        },
+        audit() {
+          const l = store.audit || [];
+          return (
+            head(
+              "Audit trail",
+              "Every submission and decision is recorded here.",
+            ) +
+            `<div class="card tbl">${l.length ? `<table class="aud"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Area</th></tr></thead><tbody>${l.map((a) => `<tr><td>${a[0]}</td><td>${a[1]}</td><td>${esc(a[2])}</td><td>${a[3]}</td></tr>`).join("")}</tbody></table>` : empty("No activity yet. Submissions and decisions will be logged here.")}</div>`
+          );
+        },
+        settings() {
+          const o = [
+            [
+              "auto",
+              "Auto-approve high scores",
+              "Approve applications scoring above the threshold without review",
+            ],
+            [
+              "mail",
+              "Email alerts for flagged documents",
+              "Send to the regional officer immediately",
+            ],
+          ];
+          return (
+            head("Settings", "Changes save on this device.") +
+            `<div class="card">${o.map((x) => `<div class="row"><div>${x[1]}<small>${x[2]}</small></div><input type="checkbox" class="sw" data-set="${x[0]}" aria-label="${x[1]}"${store[x[0]] ? " checked" : ""}></div>`).join("")}<div class="row"><div>Background colors<small>Pick one of two light combinations</small></div><div class="pal"><button class="palb" data-pal="sage" aria-pressed="${(store.pal || "sage") == "sage"}"><i style="background:linear-gradient(135deg,#f7f2e2 50%,#dde6c9 50%)"></i>Cream and sage</button><button class="palb" data-pal="mint" aria-pressed="${store.pal == "mint"}"><i style="background:linear-gradient(135deg,#fbf8ee 50%,#d8ebdc 50%)"></i>Ivory and mint</button></div></div><div class="row"><div>Auto-approve threshold<small>Currently <b id="tv">${store.th || 90}</b> out of 100</small></div><input type="range" min="60" max="100" value="${store.th || 90}" id="th" aria-label="Threshold"></div><div class="row"><div>Account<small>Signed in as ${esc(user.email)}</small></div><button class="btn ghost" data-out>Sign out</button></div><div class="row"><div>Clear all data<small>Deletes every saved application and the audit trail</small></div><button class="btn ghost" data-reset>Clear data</button></div></div>`
+          );
+        },
+      };
+      let user = null,
+        mode = "pick",
+        fails = 0,
+        lockUntil = 0;
+      const hx = (b) =>
+        [...new Uint8Array(b)]
+          .map((x) => x.toString(16).padStart(2, "0"))
+          .join("");
+      async function hash(pw, salt) {
+        const k = await crypto.subtle.importKey(
+          "raw",
+          new TextEncoder().encode(pw),
+          "PBKDF2",
+          false,
+          ["deriveBits"],
+        );
+        return hx(
+          await crypto.subtle.deriveBits(
+            {
+              name: "PBKDF2",
+              salt: new TextEncoder().encode(salt),
+              iterations: 100000,
+              hash: "SHA-256",
+            },
+            k,
+            256,
+          ),
+        );
+      }
+      function sess() {
+        let e = null;
+        try {
+          e = sessionStorage.getItem("vyrax_s");
+        } catch (_) {}
+        e = e || store.session;
+        user = (store.users || []).find((u) => u.email == e) || null;
+      }
+      function authUI() {
+        document.body.classList.add("locked");
+        const up = mode == "up";
+        if (mode == "pick") {
+          document.title = "Welcome – VYRAX Compliance";
+          $("#auth").innerHTML =
+            `<div class="asplit"><div class="apanel">${ART}<h2>Every flag backed by evidence.</h2><ul>${["Check each document against its checklist", "Flag problems before anything is approved", "Keep a record of every decision"].map((x) => `<li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#cfe3cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>${x}</li>`).join("")}</ul></div><div class="acard pick"><div class="brand" style="padding:0 0 14px"><div class="mark">V</div><div><b>VYRAX</b><small>Compliance desk</small></div></div><h1>Welcome</h1><p class="sub">Choose how you would like to continue.</p><div class="pickbtns"><button class="btn" data-mode="in" type="button">Sign in</button><button class="btn ghost" data-mode="up" type="button">Create an account</button></div><button class="btn ghost" data-demo type="button" style="width:100%;margin-top:10px">Continue with demo account</button><p class="sub" style="margin:12px 0 0;font-size:13px">Demo login: <b>demo</b> / <b>demo12345</b>. Accounts are stored on this device only.</p></div></div>`;
+          return;
+        }
+        document.title =
+          (up ? "Create account" : "Sign in") + " – VYRAX Compliance";
+        $("#auth").innerHTML =
+          `<div class="asplit"><div class="apanel">${ART}<h2>Every flag backed by evidence.</h2><ul>${["Check each document against its checklist", "Flag problems before anything is approved", "Keep a record of every decision"].map((x) => `<li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#cfe3cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>${x}</li>`).join("")}</ul></div><div class="acard"><div class="brand" style="padding:0 0 14px"><div class="mark">V</div><div><b>VYRAX</b><small>Compliance desk</small></div></div><h1>${up ? "Create your account" : "Sign in"}</h1><p class="sub">${up ? "Your account is stored on this device only." : (store.users || []).length ? "Enter your username and password to continue." : "No accounts on this device yet. Create an account first."}</p><form id="af" class="form" novalidate>${up ? '<label>Full name<input name="name" autocomplete="name"></label>' : ""}${up ? '<label>Email<input name="email" type="email" autocomplete="email"></label>' : '<label>Username<input name="user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'}<label>Password<input name="pw" type="password" autocomplete="${up ? "new-password" : "current-password"}"${up ? ' placeholder="At least 8 characters"' : ""}></label>${up ? '<label>Confirm password<input name="pw2" type="password" autocomplete="new-password"></label>' : ""}<label class="ck"><input type="checkbox" name="show">Show password</label>${up ? "" : '<label class="ck"><input type="checkbox" name="keep">Keep me signed in on this device</label>'}<div class="err" id="aerr" role="alert"></div><button class="btn" type="submit">${up ? "Create account" : "Sign in"}</button></form><p class="sub" style="margin:14px 0 0">${up ? ((store.users || []).length ? 'Already have an account? <a href="#" data-mode="in">Sign in</a>' : "") : 'New here? <a href="#" data-mode="up">Create an account</a>'}</p>${up ? "" : '<p class="sub" style="margin:8px 0 0"><a href="#" data-demo>Use the demo account (demo / demo12345)</a></p>'}<p class="sub" style="margin:8px 0 0"><a href="#" data-mode="pick">← Back</a></p></div></div>`;
+        const f = $("#af input");
+        if (f) f.focus();
+      }
+      async function auth(f) {
+        const b = f.querySelector("button[type=submit]"),
+          er = $("#aerr");
+        er.textContent = "";
+        b.classList.add("busy");
+        b.disabled = true;
+        await new Promise((r) => setTimeout(r, 450));
+        try {
+          await auth0(f);
+        } finally {
+          if (b.isConnected) {
+            b.classList.remove("busy");
+            b.disabled = false;
+            if (er.textContent) {
+              const c = document.querySelector(".acard");
+              c.classList.remove("shake");
+              void c.offsetWidth;
+              c.classList.add("shake");
+            }
+          }
+        }
+      }
+      async function auth0(f) {
+        const d = new FormData(f),
+          em = (d.get("email") || "").trim().toLowerCase(),
+          un = (d.get("user") || "").trim().toLowerCase(),
+          pw = d.get("pw") || "",
+          er = $("#aerr"),
+          us = store.users || (store.users = []);
+        if (!window.crypto || !crypto.subtle) {
+          er.textContent =
+            "This browser cannot protect passwords here. Open the page over https in a current browser.";
+          return;
+        }
+        if (mode == "up") {
+          const nm = (d.get("name") || "").trim();
+          if (!nm) {
+            er.textContent = "Enter your full name.";
+            return;
+          }
+          if (!/^\S+@\S+\.\S+$/.test(em)) {
+            er.textContent = "Enter a valid email address.";
+            return;
+          }
+          let un = (
+              em.split("@")[0].replace(/[^a-z0-9._-]/g, "") || "user"
+            ).slice(0, 24),
+            b = un,
+            n = 1;
+          while (us.find((u) => (u.username || "") == un)) un = b + ++n;
+          if (pw.length < 8) {
+            er.textContent = "Use a password of at least 8 characters.";
+            return;
+          }
+          if (pw != d.get("pw2")) {
+            er.textContent = "The two passwords do not match.";
+            return;
+          }
+          if (us.find((u) => u.email == em)) {
+            er.textContent =
+              "An account with this email already exists. Sign in instead.";
+            return;
+          }
+          const salt = hx(crypto.getRandomValues(new Uint8Array(16)));
+          us.push({
+            name: nm,
+            username: un,
+            email: em,
+            salt,
+            hash: await hash(pw, salt),
+          });
+          save();
+          login(em, false);
+          setTimeout(
+            () => toast("Account created. Your username is " + un),
+            1800,
+          );
+          return;
+        }
+        if (Date.now() < lockUntil) {
+          er.textContent =
+            "Too many attempts. Wait " +
+            Math.ceil((lockUntil - Date.now()) / 1000) +
+            " seconds and try again.";
+          return;
+        }
+        if (!un) {
+          er.textContent = "Enter your username.";
+          return;
+        }
+        const u = us.find((x) => (x.username || "") == un || x.email == un);
+        if (!u || (await hash(pw, u.salt)) != u.hash) {
+          fails++;
+          if (fails >= 5) {
+            lockUntil = Date.now() + 30000;
+            fails = 0;
+          }
+          er.textContent = "Username or password is incorrect.";
+          return;
+        }
+        fails = 0;
+        login(u.email, !!d.get("keep"));
+      }
+      function login(em, keep) {
+        try {
+          sessionStorage.setItem("vyrax_s", em);
+        } catch (_) {}
+        if (keep) store.session = em;
+        else delete store.session;
+        save();
+        sess();
+        LOG("System", "Signed in", "Account");
+        toast("Signed in as " + user.name);
+        location.hash = "dashboard";
+        render();
+      }
+      function logout() {
+        LOG("System", "Signed out", "Account");
+        try {
+          sessionStorage.removeItem("vyrax_s");
+        } catch (_) {}
+        delete store.session;
+        save();
+        user = null;
+        mode = "pick";
+        location.hash = "";
+        render();
+      }
+      // Temporary demo login: delete demo() and the [data-demo] buttons to remove it.
+      async function demo() {
+        if (!window.crypto || !crypto.subtle) {
+          toast("Demo sign-in needs the page opened in a current browser");
+          return;
+        }
+        const us = store.users || (store.users = []);
+        let u = us.find((x) => x.username == "demo");
+        if (!u) {
+          const salt = hx(crypto.getRandomValues(new Uint8Array(16)));
+          u = {
+            name: "Demo Reviewer",
+            username: "demo",
+            email: "demo@vyrax.local",
+            salt,
+            hash: await hash("demo12345", salt),
+          };
+          us.push(u);
+          save();
+        }
+        login(u.email, false);
+      }
+      let quiet = false;
+      const ART = `<svg class="art" viewBox="0 0 240 170" aria-hidden="true"><circle cx="170" cy="85" r="78" fill="rgba(247,242,226,.07)"/><circle cx="170" cy="85" r="52" fill="rgba(247,242,226,.09)"/><g class="float"><rect x="70" y="40" width="86" height="108" rx="10" fill="#e4ead2" transform="rotate(-8 113 94)"/><rect x="88" y="28" width="86" height="108" rx="10" fill="#fcfaf0"/><rect x="100" y="46" width="46" height="6" rx="3" fill="#cfe3cf"/><rect x="100" y="60" width="58" height="6" rx="3" fill="#e4ead2"/><rect x="100" y="74" width="34" height="6" rx="3" fill="#e4ead2"/><circle class="pulse" cx="168" cy="112" r="34" fill="none" stroke="#cfe3cf" stroke-width="2"/><path d="M168 78l30 11v22c0 17-12 29-30 35-18-6-30-18-30-35V89z" fill="#3a8559" stroke="#f7f2e2" stroke-width="4" stroke-linejoin="round"/><path d="M155 112l9 9 17-19" fill="none" stroke="#f7f2e2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>`;
+      function anim(q) {
+        document.querySelectorAll("[data-n]").forEach((el) => {
+          const n = +el.dataset.n;
+          if (q || !n || matchMedia("(prefers-reduced-motion:reduce)").matches)
+            return;
+          const t0 = performance.now();
+          (function f(t) {
+            const p = Math.min(1, (t - t0) / 800);
+            el.textContent = Math.round(n * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(f);
+          })(t0);
+        });
+      }
+      function donut(a) {
+        const t = a.length,
+          r = 52,
+          C = 2 * Math.PI * r;
+        let off = 0;
+        return `<svg viewBox="0 0 140 140" class="donut" role="img" aria-label="Applications by status"><circle cx="70" cy="70" r="${r}" fill="none" stroke="var(--cream2)" stroke-width="16"/>${Object.keys(
+          COL,
+        )
+          .map((k) => {
+            const n = a.filter((x) => x.status == k).length,
+              l = (n / t) * C,
+              o = off;
+            off += l;
+            return n
+              ? `<circle class="seg" cx="70" cy="70" r="${r}" fill="none" stroke="${COL[k]}" stroke-width="16" stroke-dasharray="${l} ${C - l}" stroke-dashoffset="${-o}" transform="rotate(-90 70 70)" style="--c:${C}"/>`
+              : "";
+          })
+          .join(
+            "",
+          )}<text x="70" y="68" text-anchor="middle" font-family="Georgia,serif" font-size="26" fill="var(--ink)">${t}</text><text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--mute)">applications</text></svg>`;
+      }
+      const CAT = {
+        "New institution": [
+          ["new institution", 6],
+          ["new college", 6],
+          ["proposal for new", 5],
+          ["letter of intent", 4],
+          ["society registration", 4],
+          ["trust deed", 4],
+          ["feasibility", 3],
+          ["essentiality certificate", 4],
+          ["establish", 3],
+          ["greenfield", 3],
+          ["setting up", 3],
+          ["start a new", 3],
+        ],
+        "New course": [
+          ["new course", 6],
+          ["new programme", 6],
+          ["new program", 6],
+          ["course introduction", 5],
+          ["introduce", 3],
+          ["syllabus", 3],
+          ["curriculum", 3],
+          ["additional course", 4],
+          ["start course", 4],
+          ["laboratory requirement", 2],
+        ],
+        "Intake increase": [
+          ["increase in intake", 7],
+          ["increase intake", 7],
+          ["additional seats", 6],
+          ["sanctioned intake", 5],
+          ["intake", 4],
+          ["enhancement", 3],
+          ["enhance", 3],
+          ["seats", 2],
+          ["capacity", 2],
+          ["increase", 2],
+        ],
+        "Extension of approval": [
+          ["extension of approval", 7],
+          ["eoa", 5],
+          ["renewal", 4],
+          ["renew", 3],
+          ["continuation", 3],
+          ["previous approval", 4],
+          ["approved till", 3],
+          ["mandatory disclosure", 3],
+          ["self disclosure", 2],
+          ["annual report", 2],
+        ],
+        "Closure of course": [
+          ["closure of course", 8],
+          ["closure of institution", 6],
+          ["closure", 6],
+          ["discontinue", 5],
+          ["discontinuation", 5],
+          ["withdrawal", 4],
+          ["withdraw", 4],
+          ["wind up", 4],
+          ["surrender", 4],
+          ["teach out", 3],
+          ["no admission", 3],
+        ],
+      };
+      const DOCK = {
+        "Land ownership deed": [
+          "land",
+          "sale deed",
+          "lease deed",
+          "patta",
+          "title deed",
+          "survey number",
+        ],
+        "Building plan approval": [
+          "building plan",
+          "plan approval",
+          "sanctioned plan",
+          "floor plan",
+          "completion certificate",
+        ],
+        "Fire safety certificate": [
+          "fire safety",
+          "fire noc",
+          "fire certificate",
+          "fire",
+        ],
+        "Faculty qualification list": [
+          "faculty",
+          "teaching staff",
+          "staff list",
+          "qualification",
+        ],
+        "Audited financial statement": [
+          "audited",
+          "balance sheet",
+          "financial statement",
+          "income and expenditure",
+          "chartered accountant",
+        ],
+      };
+      const rx = (w) =>
+        new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+      const CK = Object.entries(CAT).map(([k, L]) => [
+          k,
+          L.map(([w, p]) => [w, p, rx(w)]),
+        ]),
+        DK = Object.entries(DOCK).map(([k, L]) => [k, L.map(rx)]);
+      const fmt = (n) =>
+        n > 1e6
+          ? (n / 1e6).toFixed(1) + " MB"
+          : Math.max(1, Math.round(n / 1e3)) + " KB";
+      async function inflate(u, raw) {
+        const ds = new DecompressionStream(raw ? "deflate-raw" : "deflate"),
+          w = ds.writable.getWriter();
+        w.write(u).catch(() => {});
+        w.close().catch(() => {});
+        return new Uint8Array(await new Response(ds.readable).arrayBuffer());
+      }
+      async function docx(f) {
+        const b = new Uint8Array(await f.arrayBuffer()),
+          v = new DataView(b.buffer);
+        let e = b.length - 22;
+        while (e >= 0 && v.getUint32(e, true) != 0x06054b50) e--;
+        if (e < 0) return null;
+        let n = v.getUint16(e + 10, true),
+          o = v.getUint32(e + 16, true);
+        while (n--) {
+          if (v.getUint32(o, true) != 0x02014b50) break;
+          const m = v.getUint16(o + 10, true),
+            cs = v.getUint32(o + 20, true),
+            nl = v.getUint16(o + 28, true),
+            xl = v.getUint16(o + 30, true),
+            cl = v.getUint16(o + 32, true),
+            lo = v.getUint32(o + 42, true),
+            nm = new TextDecoder().decode(b.slice(o + 46, o + 46 + nl));
+          if (nm == "word/document.xml") {
+            const st =
+                lo +
+                30 +
+                v.getUint16(lo + 26, true) +
+                v.getUint16(lo + 28, true),
+              d = b.slice(st, st + cs),
+              x = m == 8 ? await inflate(d, true) : d;
+            return new TextDecoder()
+              .decode(x)
+              .replace(/<\/w:p>/g, "\n")
+              .replace(/<[^>]+>/g, "");
+          }
+          o += 46 + nl + xl + cl;
+        }
+        return null;
+      }
+      async function pdf(f) {
+        const b = new Uint8Array(await f.arrayBuffer()),
+          s = new TextDecoder("latin1").decode(b);
+        let out = s,
+          re = /stream\r?\n/g,
+          m,
+          c = 0;
+        while ((m = re.exec(s)) && c++ < 400) {
+          const st = m.index + m[0].length,
+            en = s.indexOf("endstream", st);
+          if (en < 0) break;
+          try {
+            out +=
+              " " +
+              new TextDecoder("latin1").decode(
+                await inflate(b.slice(st, en), false),
+              );
+          } catch (_) {}
+          re.lastIndex = en;
+        }
+        const L = [];
+        out.replace(
+          /\[((?:[^\]\\]|\\.)*)\]\s*TJ|\(((?:[^()\\]|\\.)*)\)\s*Tj/g,
+          (_, a, t) => {
+            L.push(
+              a != null
+                ? [...a.matchAll(/\(((?:[^()\\]|\\.)*)\)/g)]
+                    .map((x) => x[1])
+                    .join("")
+                : t,
+            );
+          },
+        );
+        return L.join(" ").replace(/\\([()\\])/g, "$1");
+      }
+      async function readFile(f) {
+        const n = f.name.toLowerCase();
+        try {
+          if (
+            /\.(txt|md|csv|json|html?|xml)$/.test(n) ||
+            f.type.startsWith("text/")
+          )
+            return await f.text();
+          if (n.endsWith(".docx")) return await docx(f);
+          if (n.endsWith(".pdf")) return await pdf(f);
+        } catch (_) {}
+        return null;
+      }
+      function classify(rows) {
+        const sc = {},
+          ev = {};
+        CK.forEach(([k]) => {
+          sc[k] = 0;
+          ev[k] = [];
+        });
+        rows.forEach((r) => {
+          const nm = " " + r.name.toLowerCase().replace(/[_\-.]+/g, " ") + " ",
+            tx = (r.text || "").toLowerCase();
+          CK.forEach(([k, L]) =>
+            L.forEach(([w, p, re]) => {
+              if (r.name != "Pasted text" && (nm.match(re) || []).length) {
+                sc[k] += p * 2;
+                ev[k].push([w, "the file name " + r.name, p * 2]);
+              }
+              if (tx) {
+                const c = Math.min(3, (tx.match(re) || []).length);
+                if (c) {
+                  sc[k] += p * c;
+                  ev[k].push([w, "the text of " + r.name, p * c]);
+                }
+              }
+            }),
+          );
+          r.kind =
+            (DK.find(([k, L]) =>
+              L.some(
+                (re) =>
+                  (nm.match(re) || []).length ||
+                  (tx.slice(0, 4000).match(re) || []).length,
+              ),
+            ) || [])[0] || "Other document";
+        });
+        const rank = Object.entries(sc).sort((a, b) => b[1] - a[1]),
+          tot = rank.reduce((a, x) => a + x[1], 0),
+          top =
+            rank[0][1] >= 6 && rank[0][1] - rank[1][1] >= 2 ? rank[0][0] : null;
+        return {
+          rows,
+          rank,
+          tot,
+          top,
+          conf: top ? Math.min(99, Math.round((rank[0][1] / tot) * 100)) : 0,
+          ev: top ? ev[top].sort((a, b) => b[2] - a[2]) : [],
+          found: DOCL.filter((d) => rows.some((r) => r.kind == d)),
+        };
+      }
+      async function identify() {
+        const rows = [];
+        for (const f of state.files || [])
+          rows.push({ name: f.name, size: f.size, text: await readFile(f) });
+        const tx = (state.txt || "").trim();
+        if (tx) rows.push({ name: "Pasted text", size: tx.length, text: tx });
+        await new Promise((r) => setTimeout(r, 600));
+        state.auth = await authAll(state.files || []);
+        state.res = classify(rows);
+        const t = state.res.top;
+        LOG(
+          "System",
+          t
+            ? 'Identified category "' +
+                t +
+                '" from ' +
+                rows.length +
+                " document(s)"
+            : "Could not identify a category from " +
+                rows.length +
+                " document(s)",
+          "Identify",
+        );
+        render();
+        const rs = $("#idres");
+        if (rs) rs.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      function addF(l) {
+        state.files = (state.files || [])
+          .concat([...l].filter((f) => f.size <= 15e6))
+          .slice(0, 15);
+        state.res = null;
+        quiet = true;
+        render();
+      }
+      function result(r) {
+        const t = r.top;
+        return (
+          `<div class="card" id="idres" style="margin-top:16px"><div class="cat"><div class="kic"><svg viewBox="0 0 24 24">${ICONS[t ? "check" : "flag"]}</svg></div><div><small style="color:var(--mute)">${t ? "Detected category" : "Result"}</small><h2>${t || "Category not clear"}</h2></div></div>` +
+          (t
+            ? `<p style="margin:14px 0 6px">Confidence ${r.conf}%</p><div class="bar"><i style="width:${r.conf}%"></i></div><h3 style="margin-top:20px">Evidence</h3><ul class="ev">${r.ev
+                .slice(0, 6)
+                .map((e) => `<li>“${esc(e[0])}” found in ${esc(e[1])}</li>`)
+                .join("")}</ul>`
+            : `<p style="margin:12px 0 0">These documents don’t say what the application is for. Add the application letter as a Word or text file, paste its text, or name files clearly, for example intake-increase-request.docx.</p>`) +
+          `<h3 style="margin-top:20px">All categories</h3>${r.rank.map((x) => `<div class="row"><span style="width:170px">${x[0]}</span><div class="bar" style="flex:1"><i style="width:${r.tot ? (x[1] / r.tot) * 100 : 0}%"></i></div><b>${r.tot ? Math.round((x[1] / r.tot) * 100) : 0}%</b></div>`).join("")}
+ ${authHTML()}
+ <h3 style="margin-top:20px">Documents read</h3><div class="tbl"><table><thead><tr><th>File</th><th>Document type</th><th>How it was read</th></tr></thead><tbody>${r.rows.map((x) => `<tr><td>${esc(x.name)}</td><td>${x.kind}</td><td>${x.text && x.text.trim().length > 20 ? "Text read (" + x.text.trim().split(/\s+/).length + " words)" : "File name only"}</td></tr>`).join("")}</tbody></table></div>
+ <h3 style="margin:20px 0 10px">Required documents</h3><div class="chk">${DOCL.map((d) => `<span>${d}</span><span class="${r.found.includes(d) ? "ok" : "no"}">${r.found.includes(d) ? "Found" : "Not found"}</span>`).join("")}</div>
+ <p style="color:var(--mute);font-size:13px;margin:16px 0">The category is worked out from keywords in file names and in the text of Word, PDF and text files. Scanned PDFs and images can only be judged by file name.</p>
+ ${t ? `<button class="btn" data-pf>Start application as ${t}</button> ` : ""}<button class="btn ghost" data-clr>Clear and start again</button></div>`
+        );
+      }
+      const RULES = [
+        [
+          "Faculty ratio 1:20",
+          (a) => a.fac >= Math.ceil((a.intake * 4) / 20),
+          (a) =>
+            a.fac +
+            " faculty for " +
+            a.intake * 4 +
+            " students, need " +
+            Math.ceil((a.intake * 4) / 20),
+        ],
+        [
+          "Built-up area 4 sq m per student",
+          (a) => a.built >= a.intake * 16,
+          (a) => a.built + " sq m, need " + a.intake * 16,
+        ],
+        [
+          "Fire certificate still valid",
+          (a) =>
+            !!a.fireTo && a.fireTo >= new Date().toISOString().slice(0, 10),
+          (a) => (a.fireTo ? "expired on " + a.fireTo : "no date given"),
+        ],
+      ];
+      async function authChk(f) {
+        const b = new Uint8Array(await f.arrayBuffer()),
+          h = hx(await crypto.subtle.digest("SHA-256", b)),
+          fl = [],
+          x = (f.name.split(".").pop() || "").toLowerCase(),
+          e = x == "jpeg" ? "jpg" : x,
+          m = [...b.slice(0, 4)]
+            .map((v) => v.toString(16).padStart(2, "0"))
+            .join(""),
+          k = m.startsWith("25504446")
+            ? "pdf"
+            : m.startsWith("89504e47")
+              ? "png"
+              : m.startsWith("ffd8ff")
+                ? "jpg"
+                : m.startsWith("504b")
+                  ? "docx"
+                  : "";
+        if (["pdf", "png", "jpg", "docx"].includes(e) && k != e)
+          fl.push("Content does not match the ." + x + " extension");
+        if (b.length < 2048) fl.push("Very small file");
+        if (k == "pdf") {
+          const s = new TextDecoder("latin1").decode(b),
+            g = (r) => (s.match(r) || [])[1] || "",
+            ed = (
+              g(/\/Producer\s*\(([^)]{0,80})\)/) +
+              " " +
+              g(/\/Creator\s*\(([^)]{0,80})\)/)
+            ).match(
+              /photoshop|illustrator|canva|gimp|ilovepdf|smallpdf|sejda/i,
+            ),
+            c = g(/\/CreationDate\s*\(D:(\d{8})/),
+            d = g(/\/ModDate\s*\(D:(\d{8})/),
+            t = (v) =>
+              Date.UTC(+v.slice(0, 4), +v.slice(4, 6) - 1, +v.slice(6, 8));
+          if (ed) fl.push("Made or edited with " + ed[0]);
+          if (c && d && t(d) - t(c) >= 864e5)
+            fl.push("Changed after it was created");
+        }
+        return { name: f.name, hash: h, fl };
+      }
+      async function authAll(fs) {
+        const r = [];
+        for (const f of fs) r.push(await authChk(f));
+        r.forEach((x) => {
+          if (r.some((y) => y !== x && y.hash == x.hash))
+            x.fl.push("Same content as another uploaded file");
+        });
+        return r;
+      }
+      function authHTML() {
+        const x = state.auth || [];
+        return x.length
+          ? `<h3 style="margin-top:20px">Authenticity checks</h3><div class="tbl"><table><thead><tr><th>File</th><th>Fingerprint</th><th>Result</th></tr></thead><tbody>${x.map((y) => `<tr><td>${esc(y.name)}</td><td><code>${y.hash.slice(0, 12)}</code></td><td class="${y.fl.length ? "no" : "ok"}">${y.fl.length ? esc(y.fl.join("; ")) : "No issues found"}</td></tr>`).join("")}</tbody></table></div><p style="color:var(--mute);font-size:13px;margin:10px 0 0">Preliminary checks only: file type, edit history, duplicates and a SHA-256 fingerprint. Seals, signatures and the issuing authority still need to be verified with the issuer.</p>`
+          : "";
+      }
+      const ruleRes = (a) =>
+        a.intake > 0 ? RULES.map((r) => [r[0], r[1](a), r[2](a)]) : null;
+      const compl0 = () => {
+        const a = A(),
+          n = a.length,
+          T = DOCL.length,
+          sc = (x) => Math.round((x.docs.length / T) * 100),
+          lv = (x) =>
+            x.status == "Flagged"
+              ? ["Non-compliant", "Flagged"]
+              : x.docs.length == T
+                ? ["Compliant", "Approved"]
+                : ["Incomplete", "Under"],
+          avg = n ? Math.round(a.reduce((s, x) => s + sc(x), 0) / n) : 0,
+          c = (k) => a.filter((x) => lv(x)[0] == k).length,
+          pl = (x) => `<span class="pill s-${lv(x)[1]}">${lv(x)[0]}</span>`,
+          kp = (v, l, i, w) =>
+            `<div class="card kpi${w ? " warn" : ""}"><div class="kic"><svg viewBox="0 0 24 24">${ICONS[i]}</svg></div><b>${v}</b><span>${l}</span></div>`;
+        return (
+          head(
+            "Compliance",
+            "How each application measures up against the five required documents.",
+            n ? `<button class="btn" data-csv>Download CSV</button>` : "",
+          ) +
+          (n
+            ? `<div class="grid k">${kp(avg + "%", "Average compliance", "compliance")}${kp(c("Compliant"), "Fully compliant", "check")}${kp(c("Incomplete"), "Incomplete", "docplus", c("Incomplete"))}${kp(c("Non-compliant"), "Non-compliant", "flag", c("Non-compliant"))}</div>` +
+              `<div class="card" style="margin-top:16px"><h3>Required documents</h3>${DOCL.map(
+                (d) => {
+                  const k = a.filter((x) => x.docs.includes(d)).length;
+                  return `<div class="row"><span style="width:210px;max-width:45%">${d}</span><div class="bar" style="flex:1"><i style="width:${(k / n) * 100}%"></i></div><b>${k} of ${n}</b></div>`;
+                },
+              ).join("")}</div>` +
+              `<div class="card" style="margin-top:16px"><h3>Application compliance</h3><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Institution</th><th>Score</th><th>Status</th><th>Missing documents</th></tr></thead><tbody>${a
+                .map((x) => {
+                  const m = DOCL.filter((d) => !x.docs.includes(d));
+                  return `<tr class="click" data-id="${x.id}"><td>${x.id}</td><td>${esc(x.name)}</td><td><div class="bar"><i style="width:${sc(x)}%"></i></div>${sc(x)}%</td><td>${pl(x)}</td><td>${m.length ? m.join(", ") : "None"}</td></tr>`;
+                })
+                .join("")}</tbody></table></div></div>`
+            : `<div class="card">${empty("No applications to check yet. Compliance scores appear once you submit an application.", `<button class="btn" data-go="new">Submit an application</button>`)}</div>`)
+        );
+      };
+      R.compliance = () => {
+        const a = A();
+        return (
+          compl0() +
+          (a.length
+            ? `<div class="card" style="margin-top:16px"><h3>Decision support</h3><p style="color:var(--mute);margin:0 0 6px;font-size:13px">Advice built from document completeness, authenticity checks and rule checks. The reviewing officer makes the final decision. Rule thresholds are sample values; confirm them against current regulator norms.</p>${a
+                .map((x) => {
+                  const r = ruleRes(x),
+                    af = (x.auth || []).filter((y) => y.fl.length),
+                    bad = r && r.filter((q) => !q[1]).length,
+                    rc =
+                      x.docs.length < DOCL.length
+                        ? ["Request documents", "Pending"]
+                        : af.length || bad
+                          ? ["Refer to officer", "Flagged"]
+                          : !r
+                            ? ["Details needed", "Under"]
+                            : ["Ready for review", "Approved"];
+                  return `<div class="item"><div style="flex:1"><b>${esc(x.name)}</b> <small style="display:inline">${x.id}</small>${r ? r.map((q) => `<small><span class="${q[1] ? "ok" : "no"}">${q[1] ? "Pass" : "Fail"}</span> ${q[0]}${q[1] ? "" : " (" + q[2] + ")"}</small>`).join("") : "<small>Rule checks need intake, faculty, area and fire certificate details.</small>"}${(x.auth || []).length ? af.map((y) => `<small class="no">${esc(y.name)}: ${esc(y.fl.join("; "))}</small>`).join("") || '<small class="ok">Uploaded files passed the authenticity checks</small>' : "<small>Authenticity not checked. Upload the files in Identify Category first.</small>"}</div><span class="pill s-${rc[1]}">${rc[0]}</span></div>`;
+                })
+                .join("")}</div>`
+            : "")
+        );
+      };
+      R.identify = () => {
+        const fs = state.files || [];
+        return (
+          head(
+            "Identify category",
+            "Upload the institution’s documents. The app reads them and works out which application category they belong to.",
+          ) +
+          `<div class="card"><label class="drop" id="dz" for="fi"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg><b>Drop documents here</b><span>or click to choose files. Word, PDF, text and image files, up to 15 files.</span><input id="fi" type="file" multiple hidden accept=".pdf,.docx,.txt,.md,.csv,.json,.html,.jpg,.jpeg,.png"></label>${fs.length ? `<div class="chips" style="margin-top:14px">${fs.map((f, i) => `<span class="chip">${esc(f.name)} (${fmt(f.size)})<button data-rm="${i}" aria-label="Remove ${esc(f.name)}">×</button></span>`).join("")}</div>` : ""}
+ <label class="paste">Or paste the text of a document or application letter<textarea id="pt" rows="4" placeholder="For example: We request an increase in intake for the B.Tech Computer Science course from 60 to 120 seats.">${esc(state.txt || "")}</textarea></label><button class="btn" id="idgo" style="margin-top:14px">Identify category</button></div>` +
+          (state.res ? result(state.res) : "")
+        );
+      };
+      const D3 = [
+        ["dashboard", "Dashboard"],
+        ["applications", "Applications"],
+        ["identify", "Identify Category"],
+        ["verification", "Verification"],
+        ["compliance", "Compliance"],
+        ["alerts", "Alerts"],
+        ["reports", "Reports"],
+      ];
+      const D3A = {
+        dashboard: ["#1b4a33", "#3a8559"],
+        applications: ["#20543b", "#4f9169"],
+        identify: ["#1d4b3c", "#3f8f74"],
+        verification: ["#173f30", "#2f7a55"],
+        compliance: ["#5c4a14", "#a98c2f"],
+        alerts: ["#55291f", "#a4523f"],
+        reports: ["#3d5728", "#7d9a4d"],
+      };
+      function d3(v) {
+        const s = $("#d3m");
+        if (!s) return;
+        const i = D3.findIndex((x) => x[0] == v),
+          c = i < 0 ? 0 : i,
+          cur = (VIEWS.find((x) => x[0] == v) || [0, "Dashboard"])[1];
+        s.innerHTML = `<div class="d3t"><span>3D menu</span><span>${cur}</span></div><div class="d3s">${D3.map(
+          ([k, l], n) => {
+            const d = n - c,
+              a = Math.abs(d),
+              g = D3A[k];
+            const tf =
+              d == 0
+                ? "translateX(0) translateZ(34px) rotateY(0deg) scale(1)"
+                : a == 1
+                  ? `translateX(${d * 58}px) translateZ(-8px) rotateY(${d * -38}deg) scale(.88)`
+                  : `translateX(${Math.sign(d) * 72}px) translateZ(-80px) rotateY(${Math.sign(d) * -55}deg) scale(.78)`;
+            return `<button type="button" class="d3c${n == i ? " on" : ""}" data-go="${k}" aria-label="${l}" aria-current="${n == i ? "page" : "false"}"${a > 1 ? ' tabindex="-1"' : ""} style="background:linear-gradient(145deg,${g[0]},${g[1]});transform:${tf};opacity:${a > 1 ? 0 : 1};pointer-events:${a > 1 ? "none" : "auto"};z-index:${9 - a}"><svg class="d3art" viewBox="0 0 132 96" aria-hidden="true"><circle cx="${30 + n * 9}" cy="14" r="34" fill="rgba(255,255,255,.08)"/><circle cx="118" cy="92" r="30" fill="rgba(255,255,255,.06)"/><path d="M-6 74Q46 48 140 72" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/><circle cx="18" cy="30" r="1.5" fill="rgba(255,255,255,.45)"/><circle cx="106" cy="52" r="1.5" fill="rgba(255,255,255,.4)"/></svg><span class="d3ic" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[k]}</svg></span><b>${l}</b></button>`;
+          },
+        ).join(
+          "",
+        )}</div><div class="d3d">${D3.map((x, n) => `<i${n == i ? ' class="on"' : ""}></i>`).join("")}</div>`;
+      }
+      const U3 = () => store.img3d || (store.img3d = []);
+      function d3u() {
+        const s = $("#d3u");
+        if (!s) return;
+        const L = U3(),
+          n = L.length,
+          step = Math.min(28, 86 / Math.max(1, n - 1));
+        s.innerHTML = `<div class="d3t"><span>3D images</span><span>${n ? n + " saved" : "Empty"}</span></div><div class="d3us${n ? "" : " e"}" id="d3us">${
+          n
+            ? `<div class="d3fan">${L.map((x, i) => {
+                const d = i - (n - 1) / 2;
+                return `<div class="d3tw" style="transform:translateX(${(d * step).toFixed(1)}px) translateZ(${-Math.abs(d) * 12}px) rotateY(${(-d * 10).toFixed(1)}deg);z-index:${20 - Math.round(Math.abs(d))}"><button type="button" class="d3th" data-lb="${x.id}" aria-label="View ${esc(x.name)}"><img src="${x.src}" alt="${esc(x.name)}"></button><button type="button" class="d3x" data-rm3d="${x.id}" aria-label="Remove ${esc(x.name)}">×</button></div>`;
+              }).join("")}</div>`
+            : ""
+        }<label class="d3add" for="d3f"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>${n ? "Add" : "Add 3D image"}<small>${n ? "" : "PNG, JPG or WEBP"}</small></label><input id="d3f" type="file" accept="image/*" multiple hidden></div>`;
+        const fi = $("#d3f");
+        if (fi)
+          fi.onchange = () => {
+            add3d([...fi.files]);
+            fi.value = "";
+          };
+        const us = $("#d3us");
+        if (us) {
+          ["dragenter", "dragover"].forEach((t) =>
+            us.addEventListener(t, (e) => {
+              e.preventDefault();
+              us.classList.add("over");
+            }),
+          );
+          ["dragleave", "drop"].forEach((t) =>
+            us.addEventListener(t, (e) => {
+              e.preventDefault();
+              us.classList.remove("over");
+            }),
+          );
+          us.addEventListener("drop", (e) => add3d([...e.dataTransfer.files]));
+        }
+      }
+      function shrink(f) {
+        return new Promise((ok, no) => {
+          const r = new FileReader();
+          r.onload = () => {
+            const im = new Image();
+            im.onload = () => {
+              const M = 900,
+                s = Math.min(1, M / Math.max(im.width, im.height)),
+                c = document.createElement("canvas");
+              c.width = Math.max(1, Math.round(im.width * s));
+              c.height = Math.max(1, Math.round(im.height * s));
+              c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+              let u = c.toDataURL("image/webp", 0.85);
+              if (!u.startsWith("data:image/webp"))
+                u = c.toDataURL("image/jpeg", 0.85);
+              ok(u);
+            };
+            im.onerror = no;
+            im.src = r.result;
+          };
+          r.onerror = no;
+          r.readAsDataURL(f);
+        });
+      }
+      async function add3d(fs) {
+        const L = U3();
+        let k = 0;
+        for (const f of fs) {
+          if (!f.type.startsWith("image/")) {
+            toast("Only image files can be added");
+            continue;
+          }
+          if (L.length >= 8) {
+            toast("Up to 8 images, remove one first");
+            break;
+          }
+          try {
+            const src = await shrink(f);
+            L.push({
+              id:
+                "i" +
+                Date.now().toString(36) +
+                Math.random().toString(36).slice(2, 5),
+              name: f.name.replace(/\.[^.]+$/, "").slice(0, 40),
+              src,
+            });
+            try {
+              localStorage.setItem("aicte", JSON.stringify(store));
+            } catch (_) {
+              L.pop();
+              toast("Not enough storage on this device");
+              break;
+            }
+            k++;
+          } catch (_) {
+            toast("Could not read " + f.name);
+          }
+        }
+        if (k) {
+          save();
+          toast(k + (k == 1 ? " image" : " images") + " added to the 3D menu");
+          d3u();
+        }
+      }
+      function lb(id) {
+        const x = U3().find((v) => v.id == id);
+        if (!x) return;
+        let e = $("#lb");
+        if (!e) {
+          e = document.createElement("div");
+          e.id = "lb";
+          e.setAttribute("role", "dialog");
+          e.setAttribute("aria-label", "Image preview");
+          e.innerHTML =
+            '<button type="button" id="lbc" aria-label="Close">×</button><div class="lbf"><img alt=""></div><div class="lbt"></div>';
+          document.body.appendChild(e);
+          e.addEventListener("click", (ev) => {
+            if (ev.target === e || ev.target.id == "lbc") closeLb();
+          });
+          const fr = e.querySelector(".lbf");
+          e.addEventListener("pointermove", (ev) => {
+            const r = fr.getBoundingClientRect(),
+              px = (ev.clientX - r.left) / r.width - 0.5,
+              py = (ev.clientY - r.top) / r.height - 0.5;
+            fr.style.transform = `rotateY(${(px * 14).toFixed(1)}deg) rotateX(${(-py * 10).toFixed(1)}deg)`;
+          });
+          e.addEventListener("pointerleave", () => (fr.style.transform = ""));
+        }
+        const i = e.querySelector("img");
+        i.src = x.src;
+        i.alt = x.name;
+        e.querySelector(".lbt").textContent = x.name;
+        e.classList.add("on");
+        document.body.style.overflow = "hidden";
+      }
+      function closeLb() {
+        const e = $("#lb");
+        if (!e) return;
+        e.classList.remove("on");
+        document.body.style.overflow = "";
+      }
+      /* Backend integration: mirrors the local store with the VYRAX server in vyrax-backend. Falls back to localStorage when the server is unreachable. */
+      const API = {
+        url: (
+          localStorage.getItem("vyrax_api") || "http://127.0.0.1:4711"
+        ).replace(/\/+$/, ""),
+        on: false,
+      };
+      async function apiCall(p, m, body) {
+        const r = await fetch(API.url + p, {
+          method: m || "GET",
+          headers: { "Content-Type": "application/json" },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        if (!r.ok) {
+          let e;
+          try {
+            e = (await r.json()).error;
+          } catch (_) {}
+          throw new Error(e || "HTTP " + r.status);
+        }
+        return r.status == 204 ? null : r.json();
+      }
+      function apiInd(msg, on) {
+        const el = $("#apiInd");
+        if (!el) return;
+        el.classList.toggle("on", !!on);
+        el.querySelector("span").textContent = "Backend: " + msg;
+      }
+      const APIST = {
+        Submitted: "Under review",
+        "Under review": "Under review",
+        Rectification: "Pending docs",
+        Escalated: "Flagged",
+        Approved: "Approved",
+        Rejected: "Flagged",
+      };
+      function b2u(a) {
+        const missing = [];
+        (a.checks || []).forEach((c) =>
+          (c.findings || []).forEach((f) => {
+            if (f.rule === "VAL-3")
+              (f.evidence || []).forEach((e) =>
+                missing.push(String(e.detail).replace(" is required", "")),
+              );
+          }),
+        );
+        const ts = a.createdAt ? +new Date(a.createdAt) : Date.now();
+        return {
+          id: a.id,
+          name: a.institution,
+          state: a.state || "",
+          type: a.type,
+          email: a.email || "",
+          remarks: "",
+          intake: a.intake || 0,
+          fac: a.faculty || 0,
+          built: a.built || 0,
+          fireTo: a.fireTo || "",
+          auth: [],
+          docs: DOCL.filter((d) => !missing.includes(d)),
+          files: (a.documents || []).map((d) => d.name),
+          status: a.uiStatus || APIST[a.status] || "Under review",
+          api: 1,
+          apiState: a.status,
+          flags: a.flagCount || 0,
+          ts,
+          date: new Date(ts).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+          }),
+        };
+      }
+      async function syncUp() {
+        for (const x of A().filter((y) => !y.api)) {
+          try {
+            const c = (
+              await apiCall("/api/applications", "POST", {
+                institution: x.name,
+                type: x.type,
+                state: x.state,
+                email: x.email,
+                intake: x.intake,
+                faculty: x.fac,
+                built: x.built,
+                fireTo: x.fireTo,
+                documents: x.files
+                  .concat(x.docs)
+                  .map((n) => ({ name: String(n), text: "" })),
+              })
+            ).application;
+            await apiCall("/api/applications/" + c.id + "/process", "POST");
+            const full = (await apiCall("/api/applications/" + c.id))
+              .application;
+            const i = A().findIndex((y) => y.id == x.id);
+            if (i > -1) A().splice(i, 1);
+            A().unshift(b2u(full));
+          } catch (e) {
+            return e;
+          }
+        }
+        return null;
+      }
+      async function apiInit() {
+        apiInd("checking…", false);
+        try {
+          const h = await apiCall("/api/health");
+          API.on = true;
+          apiInd("connected (" + (h.service || "vyrax") + ")", true);
+          const list = (await apiCall("/api/applications")).applications || [];
+          for (const s of list) {
+            const full = (await apiCall("/api/applications/" + s.id))
+                .application,
+              i = A().findIndex((x) => x.id == s.id);
+            if (i > -1) A().splice(i, 1);
+            A().unshift(b2u(full));
+          }
+          const se = await syncUp();
+          if (se)
+            apiInd(
+              "connected — could not sync local apps: " + se.message,
+              true,
+            );
+          try {
+            const al = (await apiCall("/api/audit")).audit || [],
+              seen = new Set((store.audit || []).map((x) => x.join("|")));
+            al.slice()
+              .reverse()
+              .forEach((en) => {
+                const t = new Date(en.ts).toLocaleString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                  msg = en.action + (en.detail ? " — " + en.detail : ""),
+                  k = [t, en.actor, msg].join("|");
+                if (!seen.has(k))
+                  (store.audit || (store.audit = [])).push([
+                    t,
+                    en.actor,
+                    msg,
+                    "Backend",
+                  ]);
+              });
+            (store.audit || []).sort((x, y) => new Date(y[0]) - new Date(x[0]));
+            store.audit = (store.audit || []).slice(0, 500);
+            save();
+          } catch (_) {}
+        } catch (e) {
+          API.on = false;
+          apiInd("offline — " + e.message + " (local mode)", false);
+        }
+      }
+      async function apiReview(id, k, btn) {
+        const map = {
+          Approved: [
+            "complete",
+            "Approved by the reviewing officer after reviewing the supporting evidence",
+          ],
+          Flagged: [
+            "manual",
+            "Escalated by the officer for further manual verification",
+          ],
+          "Pending docs": [
+            "request_info",
+            "Additional information and documents requested by the officer",
+          ],
+        };
+        const [dec, notes] = map[k];
+        btn.classList.add("busy");
+        btn.disabled = true;
+        try {
+          await apiCall("/api/applications/" + id + "/review", "POST", {
+            decision: dec,
+            note: notes,
+          });
+          const full = (await apiCall("/api/applications/" + id)).application;
+          const j = A().findIndex((y) => y.id == id);
+          if (j > -1) A().splice(j, 1, b2u(full));
+          LOG(
+            "Reviewer",
+            k + ": application " + id + " (backend " + dec + ")",
+            "Verification",
+          );
+          save();
+          render();
+          toast(id + " → " + full.status + " on the backend");
+        } catch (e) {
+          btn.classList.remove("busy");
+          btn.disabled = false;
+          toast("Backend error: " + e.message);
+        }
+      }
+      async function apiRecheck(id, btn) {
+        btn.classList.add("busy");
+        btn.disabled = true;
+        try {
+          await apiCall("/api/applications/" + id + "/process", "POST");
+          const full = (await apiCall("/api/applications/" + id)).application;
+          const j = A().findIndex((y) => y.id == id);
+          if (j > -1) A().splice(j, 1, b2u(full));
+          save();
+          render();
+          toast(
+            id +
+              " re-processed: " +
+              full.flagCount +
+              " flag(s), state " +
+              full.status,
+          );
+        } catch (e) {
+          btn.classList.remove("busy");
+          btn.disabled = false;
+          toast("Backend error: " + e.message);
+        }
+      }
+      function theme() {
+        document.documentElement.dataset.pal = store.pal || "sage";
+      }
+      function render() {
+        if (!user) {
+          authUI();
+          return;
+        }
+        document.body.classList.remove("locked");
+        let v = location.hash.slice(1);
+        if (!R[v]) v = "dashboard";
+        if (v != "new") state.pf = null;
+        $("#nav").innerHTML = VIEWS.map(
+          (x) =>
+            `<button data-go="${x[0]}"${x[0] == (v == "new" ? "applications" : v) ? ' aria-current="page"' : ""}><svg viewBox="0 0 24 24">${ICONS[x[0]]}</svg>${x[1]}${x[0] == "alerts" && AC() ? '<span class="badge">' + AC() + "</span>" : ""}</button>`,
+        ).join("");
+        d3(v == "new" ? "applications" : v);
+        d3u();
+        const qt = quiet;
+        quiet = false;
+        $("#main").classList.toggle("quiet", qt);
+        $("#main").innerHTML = R[v]();
+        $("#wa").textContent = user.name
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+        $("#wn").textContent = user.name;
+        $("#we").textContent = user.email;
+        document.title =
+          (VIEWS.find((x) => x[0] == v) || [0, "New application"])[1] +
+          " – VYRAX Compliance";
+        $("#main").scrollTop = 0;
+        scrollTo(0, 0);
+        bind();
+        anim(qt);
+      }
+      function go(v) {
+        if (location.hash == "#" + v) render();
+        else location.hash = v;
+      }
+      function bind() {
+        const q = $("#q");
+        if (q)
+          q.oninput = (e) => {
+            state.q = e.target.value;
+            quiet = true;
+            const p = e.target.selectionStart;
+            render();
+            const n = $("#q");
+            n.focus();
+            n.setSelectionRange(p, p);
+          };
+        const f = $("#f");
+        if (f)
+          f.onchange = (e) => {
+            state.f = e.target.value;
+            quiet = true;
+            render();
+          };
+        document
+          .querySelectorAll("[data-csv]")
+          .forEach((b) => (b.onclick = dl));
+        const fi = $("#fi");
+        if (fi)
+          fi.onchange = (e) => {
+            addF(e.target.files);
+            e.target.value = "";
+          };
+        const dz = $("#dz");
+        if (dz) {
+          ["dragenter", "dragover"].forEach((t) =>
+            dz.addEventListener(t, (e) => {
+              e.preventDefault();
+              dz.classList.add("over");
+            }),
+          );
+          ["dragleave", "drop"].forEach((t) =>
+            dz.addEventListener(t, (e) => {
+              e.preventDefault();
+              dz.classList.remove("over");
+            }),
+          );
+          dz.addEventListener("drop", (e) => addF(e.dataTransfer.files));
+        }
+        const pt = $("#pt");
+        if (pt)
+          pt.oninput = (e) => {
+            state.txt = e.target.value;
+          };
+        const ib = $("#idgo");
+        if (ib)
+          ib.onclick = () => {
+            if (!(state.files || []).length && !(state.txt || "").trim()) {
+              toast("Add a file or paste some text first");
+              return;
+            }
+            ib.classList.add("busy");
+            ib.disabled = true;
+            identify();
+          };
+        const th = $("#th");
+        if (th)
+          th.oninput = (e) => {
+            store.th = e.target.value;
+            $("#tv").textContent = e.target.value;
+            save();
+          };
+        document.querySelectorAll("[data-set]").forEach(
+          (c) =>
+            (c.onchange = () => {
+              store[c.dataset.set] = c.checked;
+              save();
+              theme();
+              toast("Setting saved");
+            }),
+        );
+      }
+      document.addEventListener("click", (e) => {
+        const r3 = e.target.closest("[data-rm3d]");
+        if (r3) {
+          e.stopPropagation();
+          store.img3d = U3().filter((x) => x.id != r3.dataset.rm3d);
+          save();
+          closeLb();
+          d3u();
+          toast("Image removed");
+          return;
+        }
+        const lo = e.target.closest("[data-lb]");
+        if (lo) {
+          lb(lo.dataset.lb);
+          return;
+        }
+        if (e.target.closest("[data-out]")) {
+          logout();
+          return;
+        }
+        const md = e.target.closest("[data-mode]");
+        if (md) {
+          e.preventDefault();
+          mode = md.dataset.mode;
+          authUI();
+          return;
+        }
+        if (e.target.closest("[data-demo]")) {
+          e.preventDefault();
+          demo();
+          return;
+        }
+        const g = e.target.closest("[data-go]"),
+          a = e.target.closest("[data-act]"),
+          r = e.target.closest("tr[data-id]");
+        const st = e.target.closest("[data-st]");
+        if (st) {
+          const [i, k] = st.dataset.st.split("|"),
+            x = A().find((y) => y.id == i);
+          if (x) {
+            if (API.on && x.api) {
+              apiReview(i, k, st);
+              return;
+            }
+            x.status = k;
+            LOG("Reviewer", k + ": application " + i, "Verification");
+            save();
+            render();
+            toast(
+              k == "Pending docs"
+                ? "Requested documents for " + i
+                : "Marked " + i + " as " + k.toLowerCase(),
+            );
+          }
+          return;
+        }
+        const rc = e.target.closest("[data-rc]");
+        if (rc) {
+          if (API.on) apiRecheck(rc.dataset.rc, rc);
+          return;
+        }
+        const rp = e.target.closest("[data-rep]");
+        if (rp) {
+          open(
+            API.url +
+              "/api/applications/" +
+              rp.dataset.rep +
+              "/report?format=html",
+            "_blank",
+          );
+          return;
+        }
+        const rs = e.target.closest("[data-reset]");
+        if (rs) {
+          if (rs.dataset.arm) {
+            store.apps = [];
+            store.audit = [];
+            save();
+            render();
+            toast("All data cleared");
+          } else {
+            rs.dataset.arm = 1;
+            rs.textContent = "Click again to confirm";
+          }
+          return;
+        }
+        const rm = e.target.closest("[data-rm]");
+        if (rm) {
+          state.files.splice(+rm.dataset.rm, 1);
+          state.res = null;
+          quiet = true;
+          render();
+          return;
+        }
+        if (e.target.closest("[data-clr]")) {
+          state.files = [];
+          state.txt = "";
+          state.res = null;
+          render();
+          return;
+        }
+        if (e.target.closest("[data-pf]")) {
+          const r = state.res;
+          state.pf = {
+            type: r.top,
+            auth: state.auth || [],
+            docs: r.found,
+            files: r.rows.map((x) => x.name).filter((n) => n != "Pasted text"),
+          };
+          go("new");
+          return;
+        }
+        const p = e.target.closest(".palb");
+        if (p) {
+          store.pal = p.dataset.pal;
+          save();
+          theme();
+          render();
+          toast("Background colors changed");
+          return;
+        }
+        if (g) go(g.dataset.go);
+        else if (a) toast(a.dataset.act);
+        else if (r) {
+          state.q = r.dataset.id;
+          state.f = "All";
+          go("applications");
+        }
+      });
+      document.addEventListener("change", (e) => {
+        if (e.target.name == "show")
+          document
+            .querySelectorAll("#af [name=pw],#af [name=pw2]")
+            .forEach((i) => (i.type = e.target.checked ? "text" : "password"));
+      });
+      document.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (e.target.id == "af") {
+          auth(e.target);
+          return;
+        }
+        const f = e.target,
+          d = new FormData(f),
+          name = (d.get("name") || "").trim(),
+          em = (d.get("email") || "").trim(),
+          er = $("#err");
+        if (!name) {
+          er.textContent = "Enter the institution name.";
+          f.elements.name.focus();
+          return;
+        }
+        if (!/^\S+@\S+\.\S+$/.test(em)) {
+          er.textContent =
+            "Enter a valid contact email, for example name@institution.edu.";
+          f.elements.email.focus();
+          return;
+        }
+        const docs = d.getAll("doc"),
+          files = [...f.elements.files.files]
+            .map((x) => x.name)
+            .concat((state.pf || {}).files || []),
+          a = A(),
+          now = new Date();
+        let done = null;
+        if (API.on) {
+          const btn = f.querySelector("[type=submit]");
+          btn.classList.add("busy");
+          btn.disabled = true;
+          try {
+            const c = (
+              await apiCall("/api/applications", "POST", {
+                institution: name,
+                type: d.get("type"),
+                state: d.get("state"),
+                email: em,
+                intake: +d.get("intake") || 0,
+                faculty: +d.get("fac") || 0,
+                built: +d.get("built") || 0,
+                fireTo: d.get("fireTo") || "",
+                documents: docs
+                  .concat(files.filter((n) => n != "Pasted text"))
+                  .map((n) => ({ name: String(n), text: "" })),
+              })
+            ).application;
+            await apiCall("/api/applications/" + c.id + "/process", "POST");
+            const full = (await apiCall("/api/applications/" + c.id))
+              .application;
+            A().unshift(b2u(full));
+            done = full.id;
+          } catch (x) {
+            toast("Backend unavailable (" + x.message + ") — saving locally");
+          }
+          btn.classList.remove("busy");
+          btn.disabled = false;
+        }
+        if (!done) {
+          const id = "AP-" + String(a.length + 1).padStart(4, "0");
+          a.unshift({
+            id,
+            name,
+            state: d.get("state"),
+            type: d.get("type"),
+            email: em,
+            remarks: d.get("remarks"),
+            intake: +d.get("intake") || 0,
+            fac: +d.get("fac") || 0,
+            built: +d.get("built") || 0,
+            fireTo: d.get("fireTo") || "",
+            auth: (state.pf || {}).auth || [],
+            docs,
+            files,
+            status: docs.length < 5 ? "Pending docs" : "Under review",
+            ts: +now,
+            date: now.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+            }),
+          });
+          done = id;
+        }
+        LOG(
+          "Applicant",
+          "Submitted application " + done + " for " + name,
+          "Applications",
+        );
+        save();
+        toast("Application " + done + " submitted");
+        state.q = "";
+        state.f = "All";
+        go("applications");
+      });
+      document.addEventListener("pointerdown", (e) => {
+        const b = e.target.closest(".btn,nav button,.palb,.d3c");
+        if (!b || b.disabled) return;
+        const r = b.getBoundingClientRect(),
+          k = Math.max(r.width, r.height) * 2,
+          x = document.createElement("span");
+        x.className = "rip";
+        x.style.cssText = `width:${k}px;height:${k}px;left:${e.clientX - r.left - k / 2}px;top:${e.clientY - r.top - k / 2}px`;
+        b.appendChild(x);
+        setTimeout(() => x.remove(), 650);
+      });
+      (function () {
+        const b = $("#bgfx");
+        for (let i = 0; i < 16; i++) {
+          const e = document.createElement("i");
+          e.className = "pt";
+          const z = 5 + Math.random() * 10;
+          e.style.cssText = `left:${Math.random() * 100}%;width:${z}px;height:${z}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${-Math.random() * 20}s`;
+          b.appendChild(e);
+        }
+      })();
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" || e.isComposing) return;
+        const t = e.target;
+        if (
+          !t ||
+          t.tagName !== "INPUT" ||
+          t.type === "checkbox" ||
+          !t.form ||
+          t.form.id !== "af"
+        )
+          return;
+        const fs = [...t.form.querySelectorAll("input")].filter(
+            (i) => i.type !== "checkbox" && i.type !== "hidden",
+          ),
+          i = fs.indexOf(t);
+        if (i > -1 && i < fs.length - 1) {
+          e.preventDefault();
+          fs[i + 1].focus();
+        }
+      });
+      document.addEventListener("click", (e) => {
+        const m = document.getElementById("mbtn");
+        if (e.target.closest("#mbtn")) {
+          const o = document.body.classList.toggle("menu");
+          m.setAttribute("aria-expanded", o);
+          return;
+        }
+        if (
+          document.body.classList.contains("menu") &&
+          (e.target.closest("#scrim") ||
+            e.target.closest("aside nav button") ||
+            e.target.closest("aside .d3c") ||
+            e.target.closest("[data-out]"))
+        ) {
+          document.body.classList.remove("menu");
+          m.setAttribute("aria-expanded", "false");
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          document.body.classList.remove("menu");
+          closeLb();
+        }
+      });
+      addEventListener("hashchange", () =>
+        document.body.classList.remove("menu"),
+      );
+      (function () {
+        const css = `#cb{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:52px;height:52px;border-radius:50%;border:0;background:var(--g7);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 18px rgba(20,54,38,.3)}#cb[hidden],#cp[hidden]{display:none}#cp{position:fixed;right:18px;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:40;width:min(360px,calc(100vw - 36px));height:min(480px,70vh);background:var(--card);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;box-shadow:0 12px 32px rgba(20,54,38,.25);overflow:hidden}#cp header{padding:12px 14px;background:var(--g7);color:#fff;font-weight:600;display:flex;justify-content:space-between}#cl{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}.cm{max-width:85%;padding:8px 12px;border-radius:12px;white-space:pre-wrap;font-size:14px}.cm.u{align-self:flex-end;background:var(--g2)}.cm.b{align-self:flex-start;background:var(--cream2)}#cf{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}#cf input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card)}`;
+        document.head.appendChild(
+          Object.assign(document.createElement("style"), { textContent: css }),
+        );
+        const b = document.createElement("button");
+        b.id = "cb";
+        b.hidden = true;
+        b.type = "button";
+        b.setAttribute("aria-label", "Open compliance assistant");
+        b.textContent = "💬";
+        const p = document.createElement("div");
+        p.id = "cp";
+        p.hidden = true;
+        p.innerHTML =
+          '<header><span>Compliance assistant</span><button type="button" id="cx" aria-label="Close" style="background:none;border:0;color:#fff;cursor:pointer;font-size:18px">×</button></header><div id="cl"></div><div id="cf"><input id="ci" placeholder="Ask about documents, rules or status" autocomplete="off" maxlength="500"><button class="btn" type="button" id="cs">Send</button></div>';
+        document.body.append(b, p);
+        const L = $("#cl"),
+          I = $("#ci"),
+          S = $("#cs"),
+          INS =
+            "You are the assistant inside the VYRAX compliance desk, which helps institutions apply for regulator approval. Answer briefly and plainly. Required documents: " +
+            DOCL.join(", ") +
+            ". Application types: " +
+            TYPES.join(", ") +
+            ". Sample rules: faculty ratio 1:20, 4 sq m built-up area per student, fire certificate must be valid. You give guidance only; a reviewing officer decides. If you do not know something, say so.";
+        let H = [],
+          gate = null,
+          busy = false,
+          sh = false;
+        const add = (c, t) => {
+          const m = document.createElement("div");
+          m.className = "cm " + c;
+          m.textContent = t;
+          L.appendChild(m);
+          L.scrollTop = L.scrollHeight;
+          return m;
+        };
+        const dev = () => {
+          try {
+            let d = localStorage.getItem("vyrax_dev");
+            if (!d) {
+              d = crypto.randomUUID();
+              localStorage.setItem("vyrax_dev", d);
+            }
+            return d;
+          } catch (_) {
+            return "x";
+          }
+        };
+        async function check() {
+          const u = user.username || user.email;
+          if (store.chatUser && store.chatUser != u)
+            return "This device’s assistant is registered to another account. Only one user can use it on a device.";
+          try {
+            const db = await claude.use("db");
+            if (db) {
+              const r = db.doc("chatdevices/" + u),
+                s = await r.get();
+              if (s.exists && (s.data() || {}).device != dev())
+                return "Your account’s assistant is registered to a different device. Only one device can use it per account.";
+              if (!s.exists) await r.set({ device: dev() });
+              sh = true;
+            }
+          } catch (_) {}
+          store.chatUser = u;
+          save();
+          return "";
+        }
+        async function send(t) {
+          busy = true;
+          add("u", t);
+          H.push({ role: "user", content: t });
+          H = H.slice(-8);
+          if (H[0].role != "user") H.shift();
+          const o = add("b", "…");
+          try {
+            const s = await claude.use("sample");
+            if (!s) throw { code: "na" };
+            const ctx = JSON.stringify(
+                A()
+                  .slice(0, 15)
+                  .map((a) => ({
+                    id: a.id,
+                    name: a.name,
+                    type: a.type,
+                    status: a.status,
+                    missing: DOCL.filter((d) => !a.docs.includes(d)),
+                  })),
+              ),
+              m = H.map((x, i) =>
+                i
+                  ? x
+                  : {
+                      role: "user",
+                      content:
+                        INS +
+                        "\n\nThe user’s applications: " +
+                        ctx +
+                        "\n\nQuestion: " +
+                        x.content,
+                    },
+              ),
+              r = await s(m, {
+                cache: false,
+                modelTier: "quick",
+                onText: (u) => {
+                  o.textContent = u.text;
+                },
+              });
+            o.textContent = r.text;
+            H.push({ role: "assistant", content: r.text });
+          } catch (e) {
+            o.textContent =
+              e && e.code == "not_granted"
+                ? "Permission to use the assistant was declined."
+                : e && e.code == "rate_limited"
+                  ? "Too many questions. Please wait a moment."
+                  : "The assistant is not available here right now.";
+            H.pop();
+          }
+          busy = false;
+        }
+        const go = () => {
+          const t = I.value.trim();
+          if (gate || busy || !t) return;
+          I.value = "";
+          send(t);
+        };
+        S.onclick = go;
+        I.onkeydown = (e) => {
+          if (e.key === "Enter" && !e.isComposing) go();
+        };
+        $("#cx").onclick = () => {
+          p.hidden = true;
+        };
+        b.onclick = async () => {
+          p.hidden = !p.hidden;
+          if (p.hidden) return;
+          I.focus();
+          if (gate === null) {
+            add("b", "Checking this device…");
+            gate = await check();
+            L.innerHTML = "";
+            I.disabled = S.disabled = !!gate;
+            add(
+              "b",
+              gate ||
+                "Hi " +
+                  user.name.split(" ")[0] +
+                  ", ask me about the required documents, application types or the status of your applications." +
+                  (sh
+                    ? ""
+                    : " Note: the one-device lock is checked on this device only in this preview."),
+            );
+          }
+        };
+        window.cbShow = () => {
+          b.hidden = !user;
+          if (!user) {
+            p.hidden = true;
+            gate = null;
+            H = [];
+            L.innerHTML = "";
+            I.disabled = S.disabled = false;
+          }
+        };
+        const _rd = render;
+        render = function () {
+          _rd();
+          cbShow();
+        };
+      })();
+      addEventListener("hashchange", render);
+      theme();
+      sess();
+      apiInit().finally(render);
+    </script>
+  </body>
+</html>
